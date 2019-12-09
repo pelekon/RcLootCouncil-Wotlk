@@ -85,5 +85,30 @@ RCTokenTable = {
 	[45656] = "ShoulderSlot",
 	[45657] = "ShoulderSlot",
 	[45658] = "ShoulderSlot",
+	
+	
+	-- TIER 9 - ToGC
+	[47557] = "ChestSlot" --Paladin, Priest, Warlock
+	[47558] = "ChestSlot" --Warrior, Hunter, Shaman
+	[47559] = "ChestSlot" -- Rogue, Death Knight, Mage, 
+	
+	[47557] = "ShoulderSlot" --Paladin, Priest, Warlock
+	[47558] = "ShoulderSlot" --Warrior, Hunter, Shaman
+	[47559] = "ShoulderSlot" -- Rogue, Death Knight, Mage, Druid
+	
+	[47557] = "HandsSlot" --Paladin, Priest, Warlock
+	[47558] = "HandsSlot" --Warrior, Hunter, Shaman
+	[47559] = "HandsSlot" -- Rogue, Death Knight, Mage, Druid
+	
+	
+	[47557] = "LegsSlot" --Paladin, Priest, Warlock
+	[47558] = "LegsSlot" --Warrior, Hunter, Shaman
+	[47559] = "LegsSlot" -- Rogue, Death Knight, Mage, Druid
+	
+	
+	[47557] = "HeadSlot" --Paladin, Priest, Warlock
+	[47558] = "HeadSlot" --Warrior, Hunter, Shaman
+	[47559] = "HeadSlot" -- Rogue, Death Knight, Mage, Druid
+	
 }
 
