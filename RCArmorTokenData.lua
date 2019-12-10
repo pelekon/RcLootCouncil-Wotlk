@@ -85,5 +85,66 @@ RCTokenTable = {
 	[45656] = "ShoulderSlot",
 	[45657] = "ShoulderSlot",
 	[45658] = "ShoulderSlot",
+	
+	
+	-- TIER 9 - ToGC
+	[47557] = "ChestSlot" --Paladin, Priest, Warlock
+	[47558] = "ChestSlot" --Warrior, Hunter, Shaman
+	[47559] = "ChestSlot" -- Rogue, Death Knight, Mage, 
+	
+	[47557] = "ShoulderSlot" --Paladin, Priest, Warlock
+	[47558] = "ShoulderSlot" --Warrior, Hunter, Shaman
+	[47559] = "ShoulderSlot" -- Rogue, Death Knight, Mage, Druid
+	
+	[47557] = "HandsSlot" --Paladin, Priest, Warlock
+	[47558] = "HandsSlot" --Warrior, Hunter, Shaman
+	[47559] = "HandsSlot" -- Rogue, Death Knight, Mage, Druid
+	
+	
+	[47557] = "LegsSlot" --Paladin, Priest, Warlock
+	[47558] = "LegsSlot" --Warrior, Hunter, Shaman
+	[47559] = "LegsSlot" -- Rogue, Death Knight, Mage, Druid
+	
+	
+	[47557] = "HeadSlot" --Paladin, Priest, Warlock
+	[47558] = "HeadSlot" --Warrior, Hunter, Shaman
+	[47559] = "HeadSlot" -- Rogue, Death Knight, Mage, Druid
+	
+	
+	-- TIER 10 - ICC
+	[52025] = "HeadSlot" --  Rogue, Death Knight, Mage, Druid
+	[52028] = "HeadSlot" --  Rogue, Death Knight, Mage, Druid HC
+	[52025] = "HandsSlot" --  Rogue, Death Knight, Mage, Druid
+	[52028] = "HandsSlot" --  Rogue, Death Knight, Mage, Druid HC
+	[52025] = "LegsSlot" --  Rogue, Death Knight, Mage, Druid
+	[52028] = "LegsSlot" --  Rogue, Death Knight, Mage, Druid HC
+	[52025] = "ShoulderSlot" --  Rogue, Death Knight, Mage, Druid
+	[52028] = "ShoulderSlot" --  Rogue, Death Knight, Mage, Druid HC
+	[52025] = "ChestSlot" --  Rogue, Death Knight, Mage, Druid
+	[52028] = "ChestSlot" --  Rogue, Death Knight, Mage, Druid HC
+	
+	
+	[52026] = "HeadSlot" --  Warrior, Hunter, Shaman
+	[52029] = "HeadSlot" --  Warrior, Hunter, Shaman HC
+	[52026] = "HandsSlot" --  RWarrior, Hunter, Shaman
+	[52029] = "HandsSlot" --  Warrior, Hunter, Shaman HC
+	[52026] = "LegsSlot" --  Warrior, Hunter, Shaman
+	[52029] = "LegsSlot" --  Warrior, Hunter, Shaman HC
+	[52026] = "ShoulderSlot" --  Warrior, Hunter, Shaman
+	[52029] = "ShoulderSlot" --  Warrior, Hunter, Shaman HC
+	[52026] = "ChestSlot" --  Warrior, Hunter, Shaman
+	[52029] = "ChestSlot" --  Warrior, Hunter, Shaman HC
+	
+	[52027] = "HeadSlot" --  Paladin, Priest, Warlock
+	[52030] = "HeadSlot" --  Paladin, Priest, Warlock HC
+	[52027] = "HandsSlot" --  Paladin, Priest, Warlock
+	[52030] = "HandsSlot" --  Paladin, Priest, Warlock HC
+	[52027] = "LegsSlot" --  Paladin, Priest, Warlock
+	[52030] = "LegsSlot" --  Paladin, Priest, Warlock HC
+	[52027] = "ShoulderSlot" -- Paladin, Priest, Warlock
+	[52030] = "ShoulderSlot" -- Paladin, Priest, Warlock HC
+	[52027] = "ChestSlot" --  Paladin, Priest, Warlock
+	[52030] = "ChestSlot" --  Paladin, Priest, Warlock HC
+	
 }
 
