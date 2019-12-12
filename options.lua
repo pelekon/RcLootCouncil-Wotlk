@@ -66,7 +66,7 @@ function addon:OptionsTable()
 								desc = "Click to emulate master looter looting 5 items (requires you to be in an raid and be the master looter or group leader/assistant",
 								type = "execute",
 								func = function()
-									if UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
+									if (IsRealRaidLeader() == 1) or (UnitIsRaidOfficer("player") == 1) then
 										RCLootCouncil_Mainframe.raidTestFrames(5)
 										InterfaceOptionsFrame:Hide();
 									else
