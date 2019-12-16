@@ -1,4 +1,4 @@
-﻿-- Author      : Potdisc
+-- Author      : Potdisc
 -- Create Date : 3/21/2012 3:46:51 PM
 -- Mainframe.lua Handles all the masterloot interaction and host/client comms
 
@@ -1125,9 +1125,9 @@ local INVTYPE_Slots = {
 		INVTYPE_WEAPONMAINHAND	= "MainHandSlot",
 		INVTYPE_WEAPONOFFHAND	= {"SecondaryHandSlot",["or"] = "MainHandSlot"},
 		INVTYPE_WEAPON		    = {"MainHandSlot","SecondaryHandSlot"},
-		INVTYPE_THROWN		    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-		INVTYPE_RANGED		    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-		INVTYPE_RANGEDRIGHT 	= {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
+		INVTYPE_THROWN		    = "RangedSlot",
+		INVTYPE_RANGED		    = "RangedSlot",
+		INVTYPE_RANGEDRIGHT 	= "RangedSlot",
 		INVTYPE_FINGER		    = {"Finger0Slot","Finger1Slot"},
 		INVTYPE_HOLDABLE	    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
