@@ -2049,28 +2049,18 @@ function RCLootCouncil_Mainframe.raidTestFrames(arg)
 
 			-- increase MAX_ITEMS or run multiple tests to test large loot table
 			local table = {
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
-				40384,
+				40384, --Betrayer of Humanity
+				19019, --Thunderfury, Blessed Blade of the Windseeker
+				45038, --Fragment of Val'anyr
+				46017, --Val'anyr, Hammer of Ancient Kings
+				40343, --Armageddon
+				40384, --Illustration of the Dragon Soul
+				43952, --Reins of the Azure Drake
+				40384, --Torch of Holy Fire
+				40399, --Signet of Manifested Pain
+				46038, --Dark Matter
+				40384, --Betrayer of Humanity
+				40384, --Betrayer of Humanity
 			}
 			-- get the client to cache all test items
 			for i = 1, #table do
