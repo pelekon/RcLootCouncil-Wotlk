@@ -37,14 +37,14 @@ function RCLootCouncil_VersionFrame:SendVerTest(media)
 	wipe(contentTable)
 	RCLootCouncil_VersionFrame:AddSelf()
 	if IsInRaid() and media == "PARTY" then
-		RCLootCouncil:SendCommMessage("RCLootCouncil", "verTest "..version, "RAID")
+		RCLootCouncil:Send("RAID", "verTest", version)
 		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, _, class = GetRaidRosterInfo(i)
 			local _, rank = RCLootCouncil_Mainframe.getGuildRankNum(name)
 			if name ~= GetUnitName("player", false) then tinsert(contentTable, {class, name, rank, ""}); end
 		end
 	else
-		RCLootCouncil:SendCommMessage("RCLootCouncil", "verTest "..version, media)
+		RCLootCouncil:Send(media, "verTest", version)
 	end
 	self:ScheduleTimer("Timeout", 5)
 	RCLootCouncil_VersionFrame:Update()

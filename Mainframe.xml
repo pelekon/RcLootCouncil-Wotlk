@@ -514,7 +514,7 @@
 						<AbsValue val="14" />
 					</FontHeight>
 				</FontString>
-				<FontString name="PeopleToRollString" inherits="GameFontNormal" hidden="true" font="Fonts\ARIALN.TTF" text="People still to roll:" justifyH="LEFT">
+				<FontString name="PeopleToRollString" inherits="GameFontNormal" hidden="true" font="Fonts\ARIALN.TTF" text="Need to roll:" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="90" y="17" />
 					</Size>
