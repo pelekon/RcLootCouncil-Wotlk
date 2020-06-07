@@ -683,7 +683,7 @@ function RCLootCouncil:HandleMessage(cmd, data, distri, sender)
 			hasVerCheck = true;				
 		end
 		local _, class = UnitClass("player")
-		self:SendTo(sender, "verTestReply", self:Serialize({class, guildRank, version}))
+		self:SendTo(sender, "verTestReply", {class, guildRank, version})
 
 	elseif cmd == 'verTestReply' then
 		if data and data[1] then			
