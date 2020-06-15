@@ -45,7 +45,7 @@ RCLootCouncil_RankFrame = {}
 local debug = false -- enable printing of debugging messages
 local nnp = false
 local superDebug = false -- extra debugging (very spammy)
-local version = GetAddOnMetadata("RCLootCouncil", "Version")
+local version = "1.6.6"
 
 local isMasterLooter = false; -- is the player master looter?
 local isCouncil = false; -- is the player in the council?
@@ -1894,7 +1894,7 @@ function RCLootCouncil_Mainframe.getML()
 		return GetUnitName("player", false)
 	end
 	local lootMethod, _, MLRaidID = GetLootMethod()
-	if lootMethod == 'master' then
+	if lootMethod == 'master' and MLRaidID then
 		local name = GetRaidRosterInfo(MLRaidID)
 		isMasterLooter = name == GetUnitName("player", false)
 		self:debug("Masterlooter is: "..tostring(name))
@@ -2383,55 +2383,106 @@ function RCLootCouncil_Mainframe:NameHover(id)
 	if not id then return; end;
 	GameTooltip:SetOwner(MainFrame, "ANCHOR_CURSOR")
 	local name = entryTable[currentSession][id][1]
+	-- entryTable order: (playerName, rank, role, totalIlvl, response, gear1, gear2, votes, class, color[], haveVoted, voters[], note)
+	local current_response = entryTable[currentSession][id][5]
+	local current_item_slot =select(9, GetItemInfo(lootTable[currentSession]))
+	if not current_item_slot or current_item_slot == "" then 
+		local itemid = select(3, strfind(lootTable[currentSession], "item:(%d+)"))
+		itemid = tonumber(itemid)
+		current_item_slot = RCTokenTable[itemid]
+	end
 	GameTooltip:AddLine(name) -- add the name as the first line
 	GameTooltip:AddLine(" ")
 	-- find the last awarded mainspec item and date
 	if lootDB[name] then -- if they're even in the db
+		local db = (mlDB or self.db.profile.dbToSend)
+		local firstDateString = RCLootCouncil:GetNumberOfDaysFromNow(lootDB[name][1]["date"])
 		for i = #lootDB[name], 1, -1 do -- start with the end, and count downwards
 			if lootDB[name][i]["responseID"] == 1 then -- the last mainspec loot awarded
+				local itemid = select(3, strfind(lootDB[name][i]["lootWon"], "item:(%d+)"))
+				local item_slot = select(9, GetItemInfo(itemid)) 
+
+				if item_slot == "" or current_item_slot ~= item_slot then -- check if token real quick
+					itemid = tonumber(itemid)
+					item_slot = RCTokenTable[itemid] or INVTYPE_Slots[item_slot]
+				end
 				local dateString = RCLootCouncil:GetNumberOfDaysFromNow(lootDB[name][i]["date"])
-				local firstDateString = RCLootCouncil:GetNumberOfDaysFromNow(lootDB[name][1]["date"])
-				GameTooltip:AddDoubleLine("Time since last MainSpec loot:", dateString, 1,1,1, 1,1,1)
-				GameTooltip:AddDoubleLine("Loot:",							lootDB[name][i]["lootWon"], 1,1,1, 1,1,1)
-				GameTooltip:AddDoubleLine("Dropped by:",					(lootDB[name][i]["boss"] or "Unknown"), 1,1,1, 0.862745, 0.0784314, 0.235294)
-				GameTooltip:AddDoubleLine("From:",							lootDB[name][i]["instance"], 1,1,1, 0.823529, 0.411765, 0.117647)
-				GameTooltip:AddDoubleLine("Item(s) replaced:",				lootDB[name][i]["itemReplaced1"], 1,1,1, 1,1,1)
-				if lootDB[name][i]["itemReplaced2"] ~= "" then
-					GameTooltip:AddDoubleLine(" ",				lootDB[name][i]["itemReplaced2"], 1,1,1, 1,1,1)
-				end
-				local itemsReceivedToday = {}
-				local count = 0
-				for k = #lootDB[name], 1, -1 do
-					if lootDB[name][k]["date"] == date("%d/%m/%y") then -- any loots today?
-						if count <= 8 then -- only show the first 8 items
-							tinsert(itemsReceivedToday, lootDB[name][k]["lootWon"])
+				if item_slot == current_item_slot then
+					GameTooltip:AddDoubleLine("Rolled "..db.buttons[current_response].text .. " for loot:", dateString.." ago", 1,1,1, 1,1,1)
+					GameTooltip:AddDoubleLine("Loot:",							lootDB[name][i]["lootWon"], 1,1,1, 1,1,1)
+					GameTooltip:AddDoubleLine("Dropped by:",					(lootDB[name][i]["boss"] or "Unknown"), 1,1,1, 0.862745, 0.0784314, 0.235294)
+					GameTooltip:AddDoubleLine("From:",							lootDB[name][i]["instance"], 1,1,1, 0.823529, 0.411765, 0.117647)
+					GameTooltip:AddDoubleLine("Item(s) replaced:",				lootDB[name][i]["itemReplaced1"], 1,1,1, 1,1,1)
+					if lootDB[name][i]["itemReplaced2"] ~= "" then
+						GameTooltip:AddDoubleLine(" ",				lootDB[name][i]["itemReplaced2"], 1,1,1, 1,1,1)
+					end
+					local itemsReceivedToday = {}
+					local count = 0
+					for k = #lootDB[name], 1, -1 do
+						if lootDB[name][k]["date"] == date("%d/%m/%y") then -- any loots today?
+							if count <= 8 then -- only show the first 8 items
+								tinsert(itemsReceivedToday, lootDB[name][k]["lootWon"])
+							end
+							count = count + 1
 						end
-						count = count + 1
 					end
-				end
-				if count > 8 then
-					tinsert(itemsReceivedToday, "+"..(count-8).." more.")
-				end
-				if #itemsReceivedToday > 0 then
+					if count > 8 then
+						tinsert(itemsReceivedToday, "+"..(count-8).." more.")
+					end
+					if #itemsReceivedToday > 0 then
+						GameTooltip:AddLine(" ")
+						GameTooltip:AddDoubleLine("Item(s) received today:",	itemsReceivedToday[1], 1,1,1, 1,1,1)
+						for k = 2, #itemsReceivedToday do
+							GameTooltip:AddDoubleLine(" ",	itemsReceivedToday[k], 1,1,1, 1,1,1)
+						end
+					end
+				
 					GameTooltip:AddLine(" ")
-					GameTooltip:AddDoubleLine("Item(s) received today:",	itemsReceivedToday[1], 1,1,1, 1,1,1)
-					for k = 2, #itemsReceivedToday do
-						GameTooltip:AddDoubleLine(" ",	itemsReceivedToday[k], 1,1,1, 1,1,1)
-					end
+					GameTooltip:AddLine(name.." has received a total of "..#lootDB[name].." items over "..firstDateString..".", 1,1,1)
+					GameTooltip:Show()
+					return;
 				end
-			
-				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine(name.." has received a total of "..#lootDB[name].." items over "..firstDateString..".", 1,1,1)
-				GameTooltip:Show()
-				return;
 			end
 		end
-		-- if it get here, it means, that they've recieved loot, but never mainspec
-		GameTooltip:AddLine("Has recieved a total of "..#lootDB[name].." items, but not a single one needed for mainspec.", 1,1,1)
+		-- if we get here, we have not received a main spec piece for this slot.
+		GameTooltip:AddLine("Has has not won a " .. db.buttons[1].text .. " roll for this slot yet.", 1, 0.2, 0.4)
+		GameTooltip:AddLine(" ")
+		local itemsReceivedToday = {}
+		local count = 0
+		for k = #lootDB[name], 1, -1 do
+			local dateString = RCLootCouncil:GetNumberOfDaysFromNow(lootDB[name][k]["date"])
+			if count <= 5 then -- show last item received
+				if count == 0 then GameTooltip:AddLine("Last "..min(#lootDB[name], 5) .. " Items Received") end
+				local color = db.buttons[lootDB[name][k]["responseID"]].color
+				GameTooltip:AddDoubleLine(lootDB[name][k]["lootWon"] .. " " .. lootDB[name][k]["response"], dateString, color[1], color[2], color[3], 1,1,1)
+			end
+			if lootDB[name][k]["date"] == date("%d/%m/%y") and lootDB[name][k]["responseID"] < db.passButton then -- any loots today?
+				if #itemsReceivedToday <= 8 then -- only show the first 8 items
+					tinsert(itemsReceivedToday, lootDB[name][k]["lootWon"])
+				end
+			end
+			count = count + 1
+		end
+		if #itemsReceivedToday > 8 then
+			tinsert(itemsReceivedToday, "+"..(#itemsReceivedToday-8).." more.")
+		end
+		if #itemsReceivedToday > 0 then
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddDoubleLine("Item(s) received today:",	itemsReceivedToday[1], 1,1,1, 1,1,1)
+			for k = 2, #itemsReceivedToday do
+				GameTooltip:AddDoubleLine(" ",	itemsReceivedToday[k], 1,1,1, 1,1,1)
+			end
+
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(name.." has received a total of "..#lootDB[name].." items over "..firstDateString, 1,1,1)
+			GameTooltip:Show()
+			return
+		end
+		-- if it get here, it means, that they've recieved loot, but nothing today 
+		GameTooltip:AddLine("Has recieved a total of "..#lootDB[name].." items over "..firstDateString.." But has received nothing today.", 1,1,1)
 		GameTooltip:Show()
 	else -- if they're not
 		GameTooltip:AddLine("Has not been logged getting any loot!", 1,1,1)
-		GameTooltip:AddLine("Best give 'em some :)", 1,1,1)
 		GameTooltip:Show()
 	end
 end
@@ -2484,6 +2535,8 @@ function RCLootCouncil:GetVariable(arg)
 		return isRunning;
 	elseif arg == "mlDB" then
 		if mlDB then return mlDB end;
+	elseif arg == "db" then 
+		if mlDB then return mlDB elseif db.dbToSend then return db.dbToSend end;
 	elseif arg == "loot" then
 		if lootTable then return lootTable else return nil end
 	elseif arg == "council" then 

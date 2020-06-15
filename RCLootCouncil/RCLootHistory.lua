@@ -50,6 +50,21 @@ function RCLootHistory:OnEnable()
 			end
 		end
 	end
+	table.sort(contentTable, (function(a, b)
+		local a_date = a.date 
+		local b_date = b.date
+		if a_date and b_date then
+			print(a_date)
+			local ad, am, ay = strsplit("/", a_date)
+			local anum = tonumber(ay..ad..am)
+
+			local bd, bm, by = strsplit("/", b_date)
+			local bnum = tonumber(by..bd..bm)
+
+			return anum > bnum
+		end
+		return false
+	end))
 	RCLootHistoryFrame:Show()
 	RCLootHistory:Update()
 	RCLootHistory:UpdateSelection()
@@ -63,7 +78,7 @@ end
 function RCLootHistory:Update()
 	FauxScrollFrame_Update(RCLootHistoryFrameScrollFrame, #contentTable, 13, 20, nil, nil, nil, nil, nil, nil, true);
 	offset = FauxScrollFrame_GetOffset(RCLootHistoryFrameScrollFrame)
-	local mlDB = RCLootCouncil:GetVariable("mlDB")
+	local mlDB = RCLootCouncil:GetVariable("db")
 	local frame = "RCLootHistoryFrameScrollFrame"
 	for i = 1, 13 do
 		local line = offset + i
