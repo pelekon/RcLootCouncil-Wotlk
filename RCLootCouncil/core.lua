@@ -17,6 +17,7 @@ RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
+local Deflate = LibStub("LibDeflate")
 
 RCLootCouncil:SetDefaultModuleState(false)
 
@@ -466,6 +467,7 @@ function RCLootCouncil:ChatCommand(msg)
 	end
 end
 
+local deflate_level = {level = 9}
 --- Send a RCLootCouncil Comm Message using AceComm-3.0
 -- See RCLootCouncil:OnCommReceived() on how to receive these messages.
 -- @param target The receiver of the message. Can be "group", "guild" or "playerName".
@@ -473,8 +475,9 @@ end
 -- @param vararg Any number of arguments to send along. Will be packaged as a table.
 function RCLootCouncil:SendCommand(target, command, ...)
 	-- send all data as a table, and let receiver unpack it
-	local toSend = self:Serialize(command, {...})
-
+	local serialized = self:Serialize(command, {...})
+	local compressed = Deflate:CompressDeflate(serialized, deflate_level)
+	local toSend = Deflate:EncodeForPrint(compressed)
 	if target == "group" then
 		if GetNumGroupMembers() > 0 then -- SendAddonMessage auto converts it to party is needed
 			self:SendCommMessage("RCLootCouncil", toSend, "RAID")
@@ -522,7 +525,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		self:DebugLog("Comm received:", serializedMsg, "from:", sender, "distri:", distri)
 		-- data is always a table to be unpacked
-		local test, command, data = self:Deserialize(serializedMsg)
+		local decoded = Deflate:DecodeForPrint(serializedMsg)
+		local decompressed = Deflate:DecompressDeflate(decoded)
+		local test, command, data = self:Deserialize(decompressed)
 		-- NOTE: Since I can't find a better way to do this, all xrealms comms is routed through here
 		--			to make sure they get delivered properly. Must be included in every OnCommReceived() function.
 		if self:HandleXRealmComms(self, command, data, sender) then return end
@@ -694,11 +699,12 @@ end
 
 function RCLootCouncil:Test(num)
 	self:Debug("Test", num)
-	local testItems = {105473,105407,105513,105465,105482,104631,105450,105537,104554,105509,104412,105499,104476,104544,104495,105568,105594,105514,105479,104532,105639,104508,105621,}
+	local testItems = {40384,19019,46017,40343,40384,43952,40384,40399,46038,45038}
 	local items = {};
 	-- pick "num" random items
 	for i = 1, num do
 		local j = math.random(1, #testItems)
+		local name = GetItemInfo(testItems[j]) 
 		tinsert(items, testItems[j])
 	end
 
@@ -827,50 +833,50 @@ end
 
 -- Classes that should auto pass a subtype
 local autopassTable = {
-	["Cloth"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "DEMONHUNTER"},
+	["Cloth"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "ROGUE", "HUNTER", "SHAMAN"},
 	["Leather"] 				= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Mail"] 					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Plate"]					= {"DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Shields"] 				= {"DEATHKNIGHT", "DRUID", "MONK", "ROGUE", "HUNTER","PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Bows"] 					= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Crossbows"] 				= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Daggers"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "HUNTER", },
-	["Guns"]						= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK","SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Fist Weapons"] 			= {"DEATHKNIGHT", "PALADIN",  "PRIEST", "MAGE", "WARLOCK"},
-	["One-Handed Axes"]		= {"DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
-	["One-Handed Maces"]		= {"MONK", "HUNTER", "MAGE", "WARLOCK"},
-	["One-Handed Swords"] 	= {"DRUID", "SHAMAN", "PRIEST",},
-	["Polearms"] 				= {"ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Staves"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN",  "ROGUE", "DEMONHUNTER"},
-	["Two-Handed Axes"]		= {"DRUID", "ROGUE", "MONK", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Two-Handed Maces"]		= {"MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Two-Handed Swords"]	= {"DRUID", "MONK", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Wands"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "DEMONHUNTER"},
-	["Warglaives"]				= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK", "HUNTER", "SHAMAN",}
+	["Mail"] 					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
+	["Plate"]					= {"DRUID", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Shields"] 				= {"DEATHKNIGHT", "DRUID", "ROGUE", "HUNTER","PRIEST", "MAGE", "WARLOCK"},
+	["Bows"] 					= {"DEATHKNIGHT", "PALADIN", "DRUID", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Crossbows"] 				= {"DEATHKNIGHT", "PALADIN", "DRUID", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Daggers"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "HUNTER", },
+	["Guns"]					= {"DEATHKNIGHT", "PALADIN", "DRUID","SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Fist Weapons"] 			= {"DEATHKNIGHT", "PALADIN", "PRIEST", "MAGE", "WARLOCK"},
+	["One-Handed Axes"]			= {"DRUID", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
+	["One-Handed Maces"]		= {"HUNTER", "MAGE", "WARLOCK"},
+	["One-Handed Swords"] 		= {"DRUID", "SHAMAN", "PRIEST"},
+	["Polearms"] 				= {"ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Staves"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN",  "ROGUE"},
+	["Two-Handed Axes"]			= {"DRUID", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
+	["Two-Handed Maces"]		= {"ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK"},
+	["Two-Handed Swords"]		= {"DRUID", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Wands"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "ROGUE", "HUNTER", "SHAMAN"},
+	["Relic"]					= {"WARRIOR", "ROGUE", "PRIEST", "MAGE", "WARLOCK", "HUNTER"}
 }
 
 -- Used to find localized subType names
 local subTypeLookup = {
-	["Cloth"]					= 124168, -- Felgrease-Smudged Robes
-	["Leather"] 				= 124265, -- Leggings of Eternal Terror
-	["Mail"] 					= 124291, -- Eredar Fel-Chain Gloves
-	["Plate"]					= 124322, -- Treads of the Defiler
-	["Shields"] 				= 124354, -- Felforged Aegis
-	["Bows"] 					= 128194, -- Snarlwood Recurve Bow
-	["Crossbows"] 				= 124362, -- Felcrystal Impaler
-	["Daggers"]					= 124367, -- Fang of the Pit
-	["Guns"]						= 124370, -- Felfire Munitions Launcher
-	["Fist Weapons"] 			= 124368, -- Demonblade Eviscerator
-	["One-Handed Axes"]		= 128196, -- Limbcarver Hatchet
-	["One-Handed Maces"]		= 124372, -- Gavel of the Eredar
-	["One-Handed Swords"] 	= 124387, -- Shadowrend Talonblade
-	["Polearms"] 				= 124377, -- Rune Infused Spear
-	["Staves"]					= 124382, -- Edict of Argus
-	["Two-Handed Axes"]		= 124360, -- Hellrender
-	["Two-Handed Maces"]		= 124375, -- Maul of Tyranny
-	["Two-Handed Swords"]	= 124389, -- Calamity's Edge
-	["Wands"]					= 128096, -- Demonspine Wand
-	["Warglaives"]				= 141604, -- Glaive of the Fallen
+	["Cloth"]					= 39252, -- Preceptor's Bindings
+	["Leather"] 				= 39275, -- Contagion Gloves
+	["Mail"] 					= 39274, -- Retcher's Shoulderpads
+	["Plate"]					= 39262, -- Gauntlets of Combined Strength
+	["Shields"] 				= 40400, -- Wall of Terror
+	["Bows"] 					= 40265, -- Arrowsong
+	["Crossbows"] 				= 40346, -- Final Voyage
+	["Daggers"]					= 39714, -- Webbed Death
+	["Guns"]					= 40385, -- Envoy of Mortality
+	["Fist Weapons"] 			= 40239, -- The hand of Nerub
+	["One-Handed Axes"]			= 40402, -- Last Laugh
+	["One-Handed Maces"]		= 40395, -- Torch of Holy Fire
+	["One-Handed Swords"] 		= 40407, -- Silent Crusader
+	["Polearms"] 				= 40208, -- Cryptfiend's Bite
+	["Staves"]					= 40300, -- Spire of Sunset
+	["Two-Handed Axes"]			= 40384, -- Betrayer of Humanity
+	["Two-Handed Maces"]		= 39758, -- The Jawbone
+	["Two-Handed Swords"]		= 40343, -- Armageddon
+	["Wands"]					= 40335, -- Touch of Horror
+	["Relic"]					= 51429, -- Wrathful Gladiator Idol of Resolve
 }
 
 -- Never autopass these armor types
@@ -946,12 +952,14 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 	local g1, g2 = self:GetPlayersGear(link, equipLoc)
 	local diff = nil
 	if g1 then diff = (ilvl - select(4, GetItemInfo(g1))) end
+
+	local ilvl = GearScore_GetScore("player", UnitName("player")) or 0
 	return
 		session,
 		self.playerName,
 		{	gear1 = g1,
 			gear2 = g2,
-			ilvl = math.floor(select(2,GetAverageItemLevel())),
+			ilvl = ilvl,
 			diff = diff,
 			note = note,
 			response = response

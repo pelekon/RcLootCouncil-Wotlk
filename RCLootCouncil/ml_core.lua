@@ -56,6 +56,13 @@ end
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
+	
+	-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
+	if not name then
+		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, #self.lootTable)
+		addon:Debug("Started timer:", "AddItem", "for", item)
+		return
+	end
 	self.lootTable[index or #self.lootTable + 1] = {
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
@@ -69,11 +76,6 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["texture"]		= texture,
 		["boe"]			= addon:IsItemBoE(link),
 	}
-	-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
-	if not name then
-		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, #self.lootTable)
-		addon:Debug("Started timer:", "AddItem", "for", item)
-	end
 end
 
 --- Removes a session from the lootTable
