@@ -1,16 +1,17 @@
 ## Author: Potdisc
-## Interface: 30300
-## Notes: Interface for running a Loot Council
-## SavedVariables: RCLootCouncilDB
+## Interface: 70000
+## Notes: Interface for running a Loot Council v2.0.1
 ## Title: RCLootCouncil
-## Version: 1.6.5
-embeds.xml
+## Version: 2.0.1
+## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
+## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
 
-Mainframe.xml
-RCCommunicate.lua
-RCLootFrame.xml
-RCRankFrame.xml
-RCVersionFrame.xml
-RCLootHistory.xml
-options.lua
-RCArmorTokenData.lua
+embeds.xml
+Locale\Locales.xml
+
+core.lua
+ml_core.lua
+
+Modules\Modules.xml
+
+Utils\tokenData.lua

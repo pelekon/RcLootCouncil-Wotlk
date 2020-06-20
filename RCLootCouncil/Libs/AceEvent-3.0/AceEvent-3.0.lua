@@ -9,18 +9,19 @@
 -- make into AceEvent.
 -- @class file
 -- @name AceEvent-3.0
--- @release $Id: AceEvent-3.0.lua 766 2009-04-04 08:26:05Z nevcairiel $
+-- @release $Id: AceEvent-3.0.lua 975 2010-10-23 11:26:18Z nevcairiel $
 local MAJOR, MINOR = "AceEvent-3.0", 3
 local AceEvent = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not AceEvent then return end
 
-local CallbackHandler = LibStub:GetLibrary("CallbackHandler-1.0")
+-- Lua APIs
+local pairs = pairs
 
+local CallbackHandler = LibStub:GetLibrary("CallbackHandler-1.0")
 
 AceEvent.frame = AceEvent.frame or CreateFrame("Frame", "AceEvent30Frame") -- our event frame
 AceEvent.embeds = AceEvent.embeds or {} -- what objects embed this lib
-
 
 -- APIs and registry for blizzard events, using CallbackHandler lib
 if not AceEvent.events then
@@ -54,7 +55,7 @@ local mixins = {
 }
 
 --- Register for a Blizzard Event.
--- The callback will always be called with the event as the first argument, and if supplied, the `arg` as second argument.
+-- The callback will be called with the optional `arg` as the first argument (if supplied), and the event name as the second (or first, if no arg was supplied)
 -- Any arguments to the event will be passed on after that.
 -- @name AceEvent:RegisterEvent
 -- @class function
@@ -70,7 +71,7 @@ local mixins = {
 -- @param event The event to unregister
 
 --- Register for a custom AceEvent-internal message.
--- The callback will always be called with the event as the first argument, and if supplied, the `arg` as second argument.
+-- The callback will be called with the optional `arg` as the first argument (if supplied), and the event name as the second (or first, if no arg was supplied)
 -- Any arguments to the event will be passed on after that.
 -- @name AceEvent:RegisterMessage
 -- @class function
