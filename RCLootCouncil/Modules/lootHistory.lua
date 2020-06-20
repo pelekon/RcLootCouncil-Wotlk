@@ -114,7 +114,7 @@ function LootHistory:BuildData()
 					response = i.responseID,
 					cols = {
 						{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
-						{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
+						{value = name, color = addon:GetClassColor(x.class)},
 						{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 						{value = i.lootWon},
 						{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}}
@@ -126,7 +126,7 @@ function LootHistory:BuildData()
 				tinsert(nameData,
 					{
 						{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
-						{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class), name = name}
+						{value = name, color = addon:GetClassColor(x.class), name = name}
 					}
 				)
 				tinsert(insertedNames, name)
@@ -356,7 +356,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	local row = dat[realrow]
 	local color = addon:GetClassColor(row.class)
 	local data = data[row.date][row.name][row.num]
-	tip:AddLine(addon.Ambiguate(row.name), color.r, color.g, color.b)
+	tip:AddLine(row.name, color.r, color.g, color.b)
 	tip:AddLine("")
 	tip:AddDoubleLine(L["Time:"], (data.time or L["Unknown"]) .." ".. row.date or L["Unknown"], 1,1,1, 1,1,1)
 	tip:AddDoubleLine(L["Loot won:"], data.lootWon or L["Unknown"], 1,1,1, 1,1,1)

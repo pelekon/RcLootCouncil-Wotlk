@@ -103,12 +103,6 @@ function addon:OptionsTable()
 										desc = L["Check to have all frames minimize when entering combat"],
 										type = "toggle",
 									},
-									ambiguate = {
-										order = 4,
-										name = L["Append realm names"],
-										desc = L["Check to append the realmname of a player from another realm"],
-										type = "toggle",
-									},
 									header = {
 										order = 7,
 										type = "header",
@@ -698,7 +692,7 @@ function addon:OptionsTable()
 										name = "",
 										values = function()
 											local t = {}
-											for k,v in ipairs(self.db.profile.council) do t[k] = self.Ambiguate(v) end
+											for k,v in ipairs(self.db.profile.council) do t[k] = v end
 											return t;
 										end,
 										width = "full",
@@ -798,9 +792,9 @@ function addon:OptionsTable()
 											local t = {}
 											for i = 1, GetNumGroupMembers() do
 												local name = select(1,GetRaidRosterInfo(i))
-												t[self:UnitName(name)] = self.Ambiguate(name)
+												t[self:UnitName(name)] = name
 											end
-											if #t == 0 then t[self.playerName] = self.Ambiguate(self.playerName) end -- Insert ourself
+											if #t == 0 then t[self.playerName] = self.playerName end -- Insert ourself
 											table.sort(t, function(v1, v2)
 												return v1 and v1 < v2
 											end)
@@ -997,7 +991,7 @@ function addon:GetGuildOptions()
 						wipe(names)
 						for ci = 1, GetNumGuildMembers() do
 							local name, rank1, rankIndex = GetGuildRosterInfo(ci); -- NOTE I assume the realm part of name is without spaces.
-							if (rankIndex + 1) == i then names[name] = Ambiguate(name, "short") end -- Ambiguate to show realmname for players from another realm
+							if (rankIndex + 1) == i then names[name] = name end
 						end
 						table.sort(names, function(v1, v2)
 							return v1 and v1 < v2

@@ -103,7 +103,6 @@ function RCLootCouncil:OnInitialize()
 				never = false,			-- Never enable
 				state = "ask_ml", 	-- Current state
 			},
-			ambiguate = false, -- Append realm names to players
 			autoStart = false, -- start a session with all eligible items
 			autoLoot = true, -- Auto loot equippable items
 			autolootEverything = true,
@@ -244,7 +243,7 @@ end
 
 function RCLootCouncil:OnEnable()
 	-- Register the player's name
-	self.realmName = select(2, UnitFullName("player"))
+	self.realmName = GetRealmName()
 	self.playerName = self:UnitName("player")
 	self:DebugLog(self.playerName, self.version, self.tVersion)
 
@@ -313,7 +312,7 @@ function RCLootCouncil:OnEnable()
 					local lootMethod = GetLootMethod()
 					if lootMethod ~= "master" then
 						self:Print(L["Changing LootMethod to Master Looting"])
-						SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
+						SetLootMethod("master", self.playerName) -- activate ML
 					end
 					if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
 						self:Print(L["Changing loot threshold to enable Auto Awarding"])
@@ -622,7 +621,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
-				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
+				self:Print(format(L["'player' has asked you to reroll"], sender))
 				self:CallModule("lootframe")
 				self:GetActiveModule("lootframe"):ReRoll(unpack(data))
 
@@ -634,7 +633,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "session_end" and self.enabled then
 				if self:UnitIsUnit(sender, self.masterLooter) then
-					self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter)))
+					self:Print(format(L["'player' has ended the session"], self.masterLooter))
 					self:GetActiveModule("lootframe"):Disable()
 					if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
 						self:GetActiveModule("votingframe"):EndSession()
@@ -1096,7 +1095,7 @@ function RCLootCouncil:OnRaidEnter(arg)
 	if not self.masterLooter and UnitIsGroupLeader("player") then
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
 		if db.usage.leader then
-			SetLootMethod("master", self.Ambiguate(self.playerName))
+			SetLootMethod("master", self.playerName)
 			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
 			if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
 				self:Print(L["Changing loot threshold to enable Auto Awarding"])
@@ -1150,13 +1149,13 @@ function RCLootCouncil:GetCouncilInGroup()
 	local council = {}
 	if IsInRaid() then
 		for k,v in ipairs(self.council) do
-			if UnitInRaid(Ambiguate(v, "short")) then
+			if UnitInRaid(v) then
 				tinsert(council, v)
 			end
 		end
 	elseif IsInGroup() then -- Party
 		for k,v in ipairs(self.council) do
-			if UnitInParty(Ambiguate(v, "short")) then
+			if UnitInParty(v) then
 				tinsert(council, v)
 			end
 		end
@@ -1198,10 +1197,10 @@ function RCLootCouncil:UnitIsUnit(unit1, unit2)
 	if not unit1 or not unit2 then return false end
 	-- Remove realm names, if any
 	if strfind(unit1, "-", nil, true) ~= nil then
-		unit1 = Ambiguate(unit1, "short")
+		unit1 = unit1
 	end
 	if strfind(unit2, "-", nil, true) ~= nil then
-		unit2 = Ambiguate(unit2, "short")
+		unit2 = unit2
 	end
 	return UnitIsUnit(unit1, unit2)
 end
@@ -1434,13 +1433,6 @@ function RCLootCouncil:HideTooltip()
 	GameTooltip:Hide()
 end
 
---- Removes any realm name from name
--- @paramsig name
--- @param name Name with(out) realmname
--- @return The name, with(out) realmname according to selected options
-function RCLootCouncil.Ambiguate(name)
-	return db.ambiguate and Ambiguate(name, "none") or Ambiguate(name, "short")
-end
 
 --- Returns the text of a button, returning settings from mldb, or default buttons
 -- @paramsig index

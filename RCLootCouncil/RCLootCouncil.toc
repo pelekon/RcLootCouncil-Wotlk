@@ -9,6 +9,7 @@
 embeds.xml
 Locale\Locales.xml
 
+compat.lua
 core.lua
 ml_core.lua
 

@@ -162,10 +162,10 @@ function RCLootCouncilML:PrintAwardedInBags()
 	for _, v in ipairs(self.awardedInBags) do
 		if self.candidates[v.winner] then
 			local c = addon:GetClassColor(self.candidates[v.winner].class)
-			local text = "|cff"..addon:RGBToHex(c.r,c.g,c.b)..addon.Ambiguate(v.winner).."|r"
+			local text = "|cff"..addon:RGBToHex(c.r,c.g,c.b).. v.winner .."|r"
 			addon:Print(v.link, "-->", text)
 		else
-			addon:Print(v.link, "-->", addon.Ambiguate(v.winner)) -- fallback
+			addon:Print(v.link, "-->", v.winner) -- fallback
 		end
 	end
 	-- IDEA Do we delete awardedInBags here or keep it?
@@ -426,7 +426,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 	if addon.testMode then
 		if winner then
 			addon:SendCommand("group", "awarded", session)
-			addon:Print(format(L["The item would now be awarded to 'player'"], addon.Ambiguate(winner)))
+			addon:Print(format(L["The item would now be awarded to 'player'"], winner))
 			self.lootTable[session].awarded = true
 			if self:HasAllItemsBeenAwarded() then
 				 addon:Print(L["All items has been awarded and  the loot session concluded"])
@@ -457,7 +457,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			if self.lootTable[session].quality < GetLootThreshold() then
 				LootSlot(self.lootTable[session].lootSlot)
 				if not addon:UnitIsUnit(winner, "player") then
-					addon:Print(format(L["Cannot give 'item' to 'player' due to Blizzard limitations. Gave it to you for distribution."], self.lootTable[session].link, addon.Ambiguate(winner)))
+					addon:Print(format(L["Cannot give 'item' to 'player' due to Blizzard limitations. Gave it to you for distribution."], self.lootTable[session].link, winner))
 					tinsert(self.awardedInBags, {link = self.lootTable[session].link, winner = winner})
 				end
 				awarded = true
@@ -478,7 +478,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			self.lootTable[session].awarded = true -- No need to let Comms handle this
 			-- IDEA Switch session ?
 
-			self:AnnounceAward(addon.Ambiguate(winner), self.lootTable[session].link, reason and reason.text or db.responses[response].text)
+			self:AnnounceAward(winner, self.lootTable[session].link, reason and reason.text or db.responses[response].text)
 			if self:HasAllItemsBeenAwarded() then self:EndSession() end
 
 		else -- If we reach here it means we couldn't find a valid MasterLootCandidate, propably due to the winner is unable to receive the loot
@@ -563,7 +563,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 	end
 	if awarded then
 		addon:Print(format(L["Auto awarded 'item'"], item))
-		self:AnnounceAward(addon.Ambiguate(name), item, db.awardReasons[reason].text)
+		self:AnnounceAward(name, item, db.awardReasons[reason].text)
 		self:TrackAndLogLoot(name, item, reason, boss, 0, nil, nil, db.awardReasons[reason])
 	else
 		addon:Print(L["Cannot autoaward:"])
@@ -691,7 +691,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 	}
 	addon:SendCommand("group", "response", ses, sender, toSend)
 	-- Let people know we've done stuff
-	addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
+	addon:Print(format(L["Item received and added from 'player'"], sender))
 	SendChatMessage("[RCLootCouncil]: "..format(L["Acknowledged as 'response'"], db.responses[response].text ), "WHISPER", nil, sender)
 end
 
@@ -705,7 +705,7 @@ function RCLootCouncilML:SendWhisperHelp(target)
 		SendChatMessage(msg, "WHISPER", nil, target)
 	end
 	SendChatMessage(L["whisper_guide2"], "WHISPER", nil, target)
-	addon:Print(format(L["Sent whisper help to 'player'"], addon.Ambiguate(target)))
+	addon:Print(format(L["Sent whisper help to 'player'"], target))
 end
 
 --------ML Popups ------------------
@@ -731,7 +731,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	icon = "",
 	on_show = function(self, data)
 		local session, player = unpack(data)
-		self.text:SetText(format(L["Are you sure you want to give #item to #player?"], RCLootCouncilML.lootTable[session].link, addon.Ambiguate(player)))
+		self.text:SetText(format(L["Are you sure you want to give #item to #player?"], RCLootCouncilML.lootTable[session].link, player))
 		self.icon:SetTexture(RCLootCouncilML.lootTable[session].texture)
 	end,
 	buttons = {

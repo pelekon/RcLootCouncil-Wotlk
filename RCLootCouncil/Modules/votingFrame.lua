@@ -225,7 +225,7 @@ function RCVotingFrame:HandleVote(session, name, vote, voter)
 	lootTable[session].candidates[name].votes = lootTable[session].candidates[name].votes + vote
 	-- And update voters names
 	if vote == 1 then
-		tinsert(lootTable[session].candidates[name].voters, addon.Ambiguate(voter))
+		tinsert(lootTable[session].candidates[name].voters, voter)
 	else
 		for i, n in ipairs(lootTable[session].candidates[name].voters) do
 			if addon:UnitIsUnit(voter, n) then
@@ -357,11 +357,11 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	local nameCheck
 	if lootDB[name] then
 		nameCheck = true
-	elseif  lootDB[addon.Ambiguate(name)] then
-		name = addon.Ambiguate(name)
+	elseif  lootDB[name] then
+		name = name
 		nameCheck = true
 	end
-	tip:AddLine(addon.Ambiguate(name), color.r, color.g, color.b)
+	tip:AddLine(name, color.r, color.g, color.b)
 	color = {} -- Color of the response
 	if nameCheck then -- they're in the DB!
 		tip:AddLine("")
@@ -654,7 +654,7 @@ end
 
 function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	frame.text:SetText(addon.Ambiguate(name))
+	frame.text:SetText(name)
 	local c = addon:GetClassColor(lootTable[session].candidates[name].class)
 	frame.text:SetTextColor(c.r, c.g, c.b, c.a)
 	data[realrow].cols[column].value = name
@@ -884,7 +884,7 @@ do
 		local data = lootTable[session].candidates[candidateName] -- Shorthand
 
 		if level == 1 then
-			info.text = addon.Ambiguate(candidateName)
+			info.text = candidateName
 			info.isTitle = true
 			info.notCheckable = true
 			info.disabled = true
@@ -978,7 +978,7 @@ do
 				end
 
 			elseif value == "REANNOUNCE" then
-				info.text = addon.Ambiguate(candidateName)
+				info.text = candidateName
 				info.isTitle = true
 				info.notCheckable = true
 				info.disabled = true
@@ -1091,7 +1091,7 @@ do
 			for name, v in pairs(candidates) do
 				if v.enchanter then
 					local c = addon:GetClassColor(v.class)
-					info.text = "|cff"..addon:RGBToHex(c.r, c.g, c.b)..addon.Ambiguate(name).."|r "..tostring(v.enchant_lvl)
+					info.text = "|cff"..addon:RGBToHex(c.r, c.g, c.b)..name.."|r "..tostring(v.enchant_lvl)
 					info.notCheckable = true
 					info.func = function()
 						for k,v in ipairs(db.awardReasons) do

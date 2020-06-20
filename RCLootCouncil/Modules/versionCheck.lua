@@ -89,7 +89,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion)
 		if addon:UnitIsUnit(v.name, name) then -- they're already added, so update them
 			v.cols =	{
 				{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },
-				{ value = addon.Ambiguate(name),color = addon:GetClassColor(class), },
+				{ value = name,color = addon:GetClassColor(class), },
 				{ value = guildRank,			color = self:GetVersionColor(version,tVersion)},
 				{ value = vVal ,				color = self:GetVersionColor(version,tVersion)},
 			}
@@ -101,7 +101,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion)
 	{	name = name,
 		cols = {
 			{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },
-			{ value = addon.Ambiguate(name),color = addon:GetClassColor(class), },
+			{ value = name,color = addon:GetClassColor(class), },
 			{ value = guildRank,			color = self:GetVersionColor(version,tVersion)},
 			{ value = vVal ,				color = self:GetVersionColor(version,tVersion)},
 		},
