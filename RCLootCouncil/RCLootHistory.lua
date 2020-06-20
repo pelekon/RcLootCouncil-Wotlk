@@ -54,7 +54,6 @@ function RCLootHistory:OnEnable()
 		local a_date = a.date 
 		local b_date = b.date
 		if a_date and b_date then
-			print(a_date)
 			local ad, am, ay = strsplit("/", a_date)
 			local anum = tonumber(ay..ad..am)
 

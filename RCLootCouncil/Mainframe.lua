@@ -753,6 +753,14 @@ function RCLootCouncil:HandleMessage(cmd, data, distri, sender)
 		--		else
 		--			self:debug("Bad command: "..tostring(object))
 		-- disabled for spamming when (not (isCouncil or isMasterLooter))
+		elseif cmd == "req_lootDB" then 
+			if isMasterLooter then 
+				RCLootCouncil:Send("RAID", "lootdb", self.db.factionrealm.lootDB)
+			end
+		elseif cmd == "lootdb" then 
+			if not isMasterLooter then
+				self.db.factionrealm.lootDB = data
+			end
 		end
 end
 
@@ -1033,7 +1041,6 @@ function RCLootCouncil_initiateLoot(item)
 			mlDB = db.dbToSend -- create the master looter db
 
 			self:Send(channel, "mldb", mlDB)
-
 			self:Send(channel, "lootTable", lootTable)-- tell everyone to do the same
 			self:Send(channel, "start", lootNum)-- tell the council we've started
 
@@ -2453,7 +2460,7 @@ function RCLootCouncil_Mainframe:NameHover(id)
 			local dateString = RCLootCouncil:GetNumberOfDaysFromNow(lootDB[name][k]["date"])
 			if count <= 5 then -- show last item received
 				if count == 0 then GameTooltip:AddLine("Last "..min(#lootDB[name], 5) .. " Items Received") end
-				local color = db.buttons[lootDB[name][k]["responseID"]].color
+				local color = lootDB[name][k]["responseID"] and db.buttons[lootDB[name][k]["responseID"]] and db.buttons[lootDB[name][k]["responseID"]].color or {1, 1, 1}
 				GameTooltip:AddDoubleLine(lootDB[name][k]["lootWon"] .. " " .. lootDB[name][k]["response"], dateString, color[1], color[2], color[3], 1,1,1)
 			end
 			if lootDB[name][k]["date"] == date("%d/%m/%y") and lootDB[name][k]["responseID"] < db.passButton then -- any loots today?
@@ -2571,8 +2578,7 @@ function RCLootCouncil:announceConsideration()
 	if db.announceConsideration then
 		local message = gsub(db.announceText, "&i", itemRunning)
 		SendChatMessage(message, db.announceChannel)
-		SendChatMessage("If you do not have RCLootCouncil link your item and a roll keyword to be considered", "RAID") 
-		SendChatMessage("Whisper me \"rchelp\" for a list of available roll keywords.", "RAID")
+		SendChatMessage("If you do not have RCLootCouncil Please go download it from https://github.com/ajseward/RcLootCouncil-Wotlk immediately", "RAID") 
 	end
 end
 
