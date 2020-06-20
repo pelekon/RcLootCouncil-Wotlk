@@ -18,6 +18,7 @@ local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
 local Deflate = LibStub("LibDeflate")
+local LibGroupTalents = LibStub("LibGroupTalents-1.0")
 
 RCLootCouncil:SetDefaultModuleState(false)
 
@@ -699,7 +700,14 @@ end
 
 function RCLootCouncil:Test(num)
 	self:Debug("Test", num)
-	local testItems = {40384,19019,46017,40343,40384,43952,40384,40399,46038,45038}
+	local testItems = {}
+	for i = 1, 18 do 
+		local id = GetInventoryItemID("player", i)
+		tinsert(testItems, id)
+	end
+	if #testItems == 0 then
+		testItems = {40384,19019,46017,40343,40384,43952,40384,40399,46038,45038}
+	end
 	local items = {};
 	-- pick "num" random items
 	for i = 1, num do
@@ -777,12 +785,12 @@ local INVTYPE_Slots = {
 		INVTYPE_WEAPONMAINHAND	= "MainHandSlot",
 		INVTYPE_WEAPONOFFHAND	= {"SecondaryHandSlot",["or"] = "MainHandSlot"},
 		INVTYPE_WEAPON		    = {"MainHandSlot","SecondaryHandSlot"},
-		INVTYPE_THROWN		    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-		INVTYPE_RANGED		    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-		INVTYPE_RANGEDRIGHT 	= {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
+		INVTYPE_THROWN		    = {"RangedSlot"},
+		INVTYPE_RANGED		    = {"RangedSlot"},
 		INVTYPE_FINGER		    = {"Finger0Slot","Finger1Slot"},
 		INVTYPE_HOLDABLE	    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
+		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"},
+		INVTYPE_RELIC			= {"RangedSlot"}
 }
 
 function RCLootCouncil:GetPlayersGear(link, equipLoc)
@@ -833,17 +841,17 @@ end
 
 -- Classes that should auto pass a subtype
 local autopassTable = {
-	["Cloth"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "ROGUE", "HUNTER", "SHAMAN"},
-	["Leather"] 				= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Mail"] 					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
+	["Cloth"]					= {"WARRIOR", "DEATHKNIGHT", "ROGUE", "HUNTER"},
+	["Leather"] 				= {"PRIEST", "MAGE", "WARLOCK"},
+	["Mail"] 					= {"DRUID", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
 	["Plate"]					= {"DRUID", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Shields"] 				= {"DEATHKNIGHT", "DRUID", "ROGUE", "HUNTER","PRIEST", "MAGE", "WARLOCK"},
+	["Shields"] 				= {"DEATHKNIGHT", "DRUID", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK"},
 	["Bows"] 					= {"DEATHKNIGHT", "PALADIN", "DRUID", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
 	["Crossbows"] 				= {"DEATHKNIGHT", "PALADIN", "DRUID", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Daggers"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "HUNTER", },
+	["Daggers"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "HUNTER"},
 	["Guns"]					= {"DEATHKNIGHT", "PALADIN", "DRUID","SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
 	["Fist Weapons"] 			= {"DEATHKNIGHT", "PALADIN", "PRIEST", "MAGE", "WARLOCK"},
-	["One-Handed Axes"]			= {"DRUID", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
+	["One-Handed Axes"]			= {"DRUID", "PRIEST", "MAGE", "WARLOCK"},
 	["One-Handed Maces"]		= {"HUNTER", "MAGE", "WARLOCK"},
 	["One-Handed Swords"] 		= {"DRUID", "SHAMAN", "PRIEST"},
 	["Polearms"] 				= {"ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
@@ -985,22 +993,22 @@ end
 
 function RCLootCouncil:GetPlayerInfo()
 	-- Check if the player has enchanting
-	local enchant, lvl = nil, 0
-	local prof1, prof2 = GetProfessions()
-	if prof1 or prof2 then
-		for i = 1, 2 do
-			local _, _, rank, _, _, _, id = GetProfessionInfo(select(i, prof1, prof2))
-			if id and id == 333 then -- NOTE: 333 should be enchanting, let's hope that holds...
-				self:Debug("I'm an enchanter")
-				enchant, lvl = true, rank
-			end
-		end
-	end
+	local enchant, lvl = IsSpellKnown(13262), 0 -- disenchant spell 
+	if enchant then lvl = 450 end -- assume max enchanting idc
 	return self.playerName, self.playerClass, self:GetPlayerRole(), self.guildRank, enchant, lvl
 end
 
 function RCLootCouncil:GetPlayerRole()
-	return UnitGroupRolesAssigned("player")
+	local gtrole = LibGroupTalents:GetUnitRole("player")
+	local role = "DAMAGER"
+	
+	if gtrole == "tank" then 
+		role = "TANK"
+	elseif gtrole == "healer" then 
+		role = "HEALER"
+	end
+
+	return role
 end
 
 function RCLootCouncil.TranslateRole(role) -- reasons
@@ -1222,15 +1230,7 @@ end
 function RCLootCouncil:UnitName(unit)
 	-- First strip any spaces
 	unit = gsub(unit, " ", "")
-	-- Then see if we already have a realm name appended
-	local find = strfind(unit, "-", nil, true)
-	if find and find < #unit then -- "-" isn't the last character
-		return unit
-	end
-	-- Proceed with UnitName()
-	local name, realm = UnitName(unit)
-	if not realm or realm == "" then realm = self.realmName end -- Extract our own realm
-	return name and name.."-"..realm or nil
+	return UnitName(unit)
 end
 
 ---------------------------------------------------------------------------
@@ -1315,12 +1315,13 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	local f = CreateFrame("Frame", name, nil) -- LibWindow seems to work better with nil parent
 	f:Hide()
 	f:SetFrameStrata("HIGH")
-	f:SetWidth(450)
+	f:SetWidth(width or 450)
 	f:SetHeight(height or 325)
 	lwin:Embed(f)
 	f:RegisterConfig(db.UI[cName])
 	f:RestorePosition() -- might need to move this to after whereever GetFrame() is called
 	f:MakeDraggable()
+	f:EnableMouseWheel(true)
 	f:SetScript("OnMouseWheel", function(f,delta) if IsControlKeyDown() then lwin.OnMouseWheel(f,delta) end end)
 
 	local tf = CreateFrame("Frame", nil, f)
@@ -1331,7 +1332,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	     insets = { left = 2, right = 2, top = 2, bottom = 2 }
 	})
 	tf:SetBackdropColor(0,0,0,0.7)
-	tf:SetBackdropBorderColor(0,0.595,0.87,1)
+	tf:SetBackdropBorderColor(0.6,0.6,0.6,1)
 	tf:SetHeight(22)
 	tf:EnableMouse()
 	tf:SetMovable(true)
@@ -1368,7 +1369,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	c:EnableMouse(true)
 	c:SetWidth(450)
 	c:SetHeight(height or 325)
-	c:SetBackdropColor(0,0.003,0.21,1)
+	c:SetBackdropColor(0.21,0.21,0.21,1)
 	c:SetBackdropBorderColor(0.3,0.3,0.5,1)
 	c:SetPoint("TOPLEFT")
 	c:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() end)

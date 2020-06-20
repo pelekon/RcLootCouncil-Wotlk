@@ -11,6 +11,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceComm-3.0", "AceTimer-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
+local Deflate = LibStub("LibDeflate")
 
 local db;
 
@@ -57,9 +58,10 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
 	
-	-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
+	-- Item isn't properly loaded, so update the data in 0.5 sec (Should only happen with /rc test)
 	if not name then
-		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, #self.lootTable)
+		self:ScheduleTimer("Timer", 0.5, "AddItem", item, bagged, slotIndex, #self.lootTable)
+		GameTooltip:SetHyperlink("item:"..item) -- cace item asap
 		addon:Debug("Started timer:", "AddItem", "for", item)
 		return
 	end
@@ -263,7 +265,9 @@ end
 function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		-- data is always a table
-		local test, command, data = addon:Deserialize(serializedMsg)
+		local decoded = Deflate:DecodeForPrint(serializedMsg)
+		local decompressed = Deflate:DecompressDeflate(decoded)
+		local test, command, data = addon:Deserialize(decompressed)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end
 
 		if test and addon.isMasterLooter then -- only ML receives these commands

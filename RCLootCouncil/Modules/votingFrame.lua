@@ -8,6 +8,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+local Deflate = LibStub("LibDeflate")
 
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
@@ -93,7 +94,9 @@ end
 function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		-- data is always a table to be unpacked
-		local test, command, data = addon:Deserialize(serializedMsg)
+		local decoded = Deflate:DecodeForPrint(serializedMsg)
+		local decompressed = Deflate:DecompressDeflate(decoded)
+		local test, command, data = addon:Deserialize(decompressed)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end
 
 		if test then
@@ -351,35 +354,55 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 
 	--Extract loot history for that name
 	local lootDB = addon:GetHistoryDB()
-	local latestMsFound, entry = false, nil
-
-	-- Their name might be saved without realmname :/
+	local hasWonMainspec, entry =false, nil
 	local nameCheck
 	if lootDB[name] then
-		nameCheck = true
-	elseif  lootDB[name] then
-		name = name
 		nameCheck = true
 	end
 	tip:AddLine(name, color.r, color.g, color.b)
 	color = {} -- Color of the response
 	if nameCheck then -- they're in the DB!
 		tip:AddLine("")
+		local nonMainspecEntries = {}
 		for i = #lootDB[name], 1, -1 do -- Start from the end
 			entry = lootDB[name][i]
-			if entry.responseID == 1 and not latestMsFound and not entry.isAwardReason then -- Latest MS roll
-				tip:AddDoubleLine(format(L["Latest 'item' won:"], addon:GetResponseText(entry.responseID)), "", 1,1,1, 1,1,1)
+			-- check if we have won an item in this slot for a max roll
+			-- self.lootTable[session] = {	bagged, lootSlot, awarded, name, link, quality, ilvl, type, subType, equipLoc, texture, boe	}
+			local item_slot = lootTable[session].equipLoc
+			local itemid = select(3, strfind(entry.lootWon, "item:(%d+)"))
+			local historical_item_slot = select(9, GetItemInfo(itemid))
+
+			if historical_item_slot == "" then 
+				historical_item_slot = RCTokenTable[itemid] or ""
+			end
+			
+			if entry.responseID == 1 and not entry.isAwardReason and item_slot == historical_item_slot and not hasWonMainspec then -- Won MS roll for this slot
+				tip:AddDoubleLine(format(L["Item won for 'roll':"], addon:GetResponseText(entry.responseID)), "", 1,1,1, 1,1,1)
 				tip:AddLine(entry.lootWon)
 				tip:AddDoubleLine(entry.time .. " " ..entry.date, format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), 1,1,1, 1,1,1)
 				tip:AddLine(" ") -- Spacer
-				latestMsFound = true
+				hasWonMainspec = true
+			else
+				if #nonMainspecEntries < 5 then -- only save last 5 items won
+					tinsert(nonMainspecEntries, entry)
+				end
 			end
+
+			-- count overall responses
 			count[entry.response] = count[entry.response] and count[entry.response] + 1 or 1
-			if not color[entry.response] or unpack(color[entry.response],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
-				color[entry.response] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
+			if not color[entry.response] or unpack(color[entry.response],1,3) == unpack({1,1,1}) and entry.color and #entry.color ~= 0  then -- If it's not already added
+				color[entry.response] = entry.color and #entry.color ~= 0 and #entry.color == 4 or {1,1,1}
 			end
 
 		end -- end counting
+
+		if not hasWonMainspec then -- list non mainspec entries if we havent won a mainspec item
+			for _, entry in ipairs(nonMainspecEntries) do 
+				tip:AddDoubleLine(format(L["Won 'item'"], entry.lootWon), addon:GetResponseText(entry.responseID), 1,1,1, 1,1,1)
+				tip:AddDoubleLine(entry.time .. " " ..entry.date, format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), 1,1,1, 1,1,1)
+			end
+		end
+
 		local totalNum = 0
 		for response, num in pairs(count) do
 			local r,g,b = unpack(color[response],1,3)
