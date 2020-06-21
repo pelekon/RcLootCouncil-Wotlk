@@ -7,321 +7,41 @@
 RCTokenTable = {
 	--[xxxxxx] = "ExampleSlot",
 
-	-- TIER 18	Hellfire Citadel
-	[127962] = "ChestSlot",
-	[127953] = "ChestSlot",
-	[127963] = "ChestSlot",
-
-	[127955] = "LegsSlot",
-	[127960] = "LegsSlot",
-	[127965] = "LegsSlot",
-
-	[127956] = "HeadSlot",
-	[127959] = "HeadSlot",
-	[127966] = "HeadSlot",
-
-	[127957] = "ShoulderSlot",
-	[127961] = "ShoulderSlot",
-	[127967] = "ShoulderSlot",
-
-	[127958] = "HandsSlot",
-	[127954] = "HandsSlot",
-	[127964] = "HandsSlot",
-
-	[127968] = "Trinket",
-	[127969] = "Trinket",
-	[127970] = "Trinket",
-
-	-- TIER 17	 Blackrock Foundry ---------------------------
-	-- Normal
-	[119305] = "ChestSlot",
-	[119318] = "ChestSlot",
-	[119315] = "ChestSlot",
-
-	[119307] = "LegsSlot",
-	[119320] = "LegsSlot",
-	[119313] = "LegsSlot",
-
-	[119308] = "HeadSlot",
-	[119321] = "HeadSlot",
-	[119312] = "HeadSlot",
-
-	[119309] = "ShoulderSlot",
-	[119322] = "ShoulderSlot",
-	[119314] = "ShoulderSlot",
-
-	[119306] = "HandsSlot",
-	[119319] = "HandsSlot",
-	[119311] = "HandsSlot",
-
-
-	-- Heroic
-	[120227] = "ChestSlot",
-	[120237] = "ChestSlot",
-	[120236] = "ChestSlot",
-
-	[120229] = "LegsSlot",
-	[120239] = "LegsSlot",
-	[120234] = "LegsSlot",
-
-	[120230] = "HeadSlot",
-	[120240] = "HeadSlot",
-	[120233] = "HeadSlot",
-
-	[120231] = "ShoulderSlot",
-	[120241] = "ShoulderSlot",
-	[120235] = "ShoulderSlot",
-
-	[120228] = "HandsSlot",
-	[120238] = "HandsSlot",
-	[120232] = "HandsSlot",
-
-	-- Mythic
-	[120242] = "ChestSlot",
-	[120252] = "ChestSlot",
-	[120251] = "ChestSlot",
-
-	[120244] = "LegsSlot",
-	[120254] = "LegsSlot",
-	[120249] = "LegsSlot",
-
-	[120245] = "HeadSlot",
-	[120255] = "HeadSlot",
-	[120248] = "HeadSlot",
-
-	[120246] = "ShoulderSlot",
-	[120256] = "ShoulderSlot",
-	[120250] = "ShoulderSlot",
-
-	[120243] = "HandsSlot",
-	[120253] = "HandsSlot",
-	[120247] = "HandsSlot",
-
-	-- TIER 16	 Siege of Orgrimmar ---------------------------
-		-- Flexible
-	[99742] = "ChestSlot",
-	[99743] = "ChestSlot",
-	[99744] = "ChestSlot",
-
-	[99751] = "LegsSlot",
-	[99752] = "LegsSlot",
-	[99753] = "LegsSlot",
-
-	[99748] = "HeadSlot",
-	[99749] = "HeadSlot",
-	[99750] = "HeadSlot",
-
-	[99754] = "ShoulderSlot",
-	[99755] = "ShoulderSlot",
-	[99756] = "ShoulderSlot",
-
-	[99745] = "HandsSlot",
-	[99746] = "HandsSlot",
-	[99747] = "HandsSlot",
-
-
-		-- Normal
-	[99696] = "ChestSlot",
-	[99691] = "ChestSlot",
-	[99686] = "ChestSlot",
-
-	[99693] = "LegsSlot",
-	[99684] = "LegsSlot",
-	[99688] = "LegsSlot",
-
-	[99683] = "HeadSlot",
-	[99689] = "HeadSlot",
-	[99694] = "HeadSlot",
-
-	[99690] = "ShoulderSlot",
-	[99685] = "ShoulderSlot",
-	[99695] = "ShoulderSlot",
-
-	[99682] = "HandsSlot",
-	[99687] = "HandsSlot",
-	[99692] = "HandsSlot",
-
-		-- Heroic
-	[99714] = "ChestSlot",
-	[99715] = "ChestSlot",
-	[99716] = "ChestSlot",
-
-	[99712] = "LegsSlot",
-	[99726] = "LegsSlot",
-	[99713] = "LegsSlot",
-
-	[99723] = "HeadSlot",
-	[99724] = "HeadSlot",
-	[99725] = "HeadSlot",
-
-	[99717] = "ShoulderSlot",
-	[99718] = "ShoulderSlot",
-	[99719] = "ShoulderSlot",
-
-	[99720] = "HandsSlot",
-	[99721] = "HandsSlot",
-	[99722] = "HandsSlot",
-
-
-	-- TIER 15	 Throne of Thunder ----------------------------
-		-- Normal
-	[95569] = "ChestSlot",
-	[95574] = "ChestSlot",
-	[95579] = "ChestSlot",
-
-	[95576] = "LegsSlot",
-	[95572] = "LegsSlot",
-	[95581] = "LegsSlot",
-
-	[95571] = "HeadSlot",
-	[95577] = "HeadSlot",
-	[95582] = "HeadSlot",
-
-	[95573] = "ShoulderSlot",
-	[95578] = "ShoulderSlot",
-	[95583] = "ShoulderSlot",
-
-	[95575] = "HandsSlot",
-	[95570] = "HandsSlot",
-	[95580] = "HandsSlot",
-
-		-- Heroic
-	[96566] = "ChestSlot",
-	[96567] = "ChestSlot",
-	[96568] = "ChestSlot",
-
-	[96631] = "LegsSlot",
-	[96632] = "LegsSlot",
-	[96633] = "LegsSlot",
-
-	[96623] = "HeadSlot",
-	[96624] = "HeadSlot",
-	[96625] = "HeadSlot",
-
-	[96699] = "ShoulderSlot",
-	[96700] = "ShoulderSlot",
-	[96701] = "ShoulderSlot",
-
-	[96599] = "HandsSlot",
-	[96600] = "HandsSlot",
-	[96601] = "HandsSlot",
-
-
-	-- TIER 14	- Heart of Fear, Terreace of Endless Springs---------------------
-		--Normal
-	[89238] = "ChestSlot",
-	[89237] = "ChestSlot",
-	[89239] = "ChestSlot",
-
-	[89243] = "LegsSlot",
-	[89244] = "LegsSlot",
-	[89245] = "LegsSlot",
-
-	[89234] = "HeadSlot",
-	[89235] = "HeadSlot",
-	[89236] = "HeadSlot",
-
-	[89246] = "ShoulderSlot",
-	[89247] = "ShoulderSlot",
-	[89248] = "ShoulderSlot",
-
-	[89240] = "HandsSlot",
-	[89241] = "HandsSlot",
-	[89242] = "HandsSlot",
-		--Heroic
-	[89250] = "ChestSlot",
-	[89249] = "ChestSlot",
-	[89251] = "ChestSlot",
-
-	[89252] = "LegsSlot",
-	[89253] = "LegsSlot",
-	[89254] = "LegsSlot",
-
-	[89258] = "HeadSlot",
-	[89260] = "HeadSlot",
-	[89259] = "HeadSlot",
-
-	[89261] = "ShoulderSlot",
-	[89262] = "ShoulderSlot",
-	[89263] = "ShoulderSlot",
-
-	[89255] = "HandsSlot",
-	[89256] = "HandsSlot",
-	[89257] = "HandsSlot",
-
-
-	-- TIER 13 - Dragon Soul ---------------------------------
-		-- Normal
-	[78174] = "ChestSlot",
-	[78179] = "ChestSlot",
-	[78184] = "ChestSlot",
-
-	[78176] = "LegsSlot",
-	[78171] = "LegsSlot",
-	[78181] = "LegsSlot",
-
-	[78172] = "HeadSlot",
-	[78177] = "HeadSlot",
-	[78182] = "HeadSlot",
-
-	[78170] = "ShoulderSlot",
-	[78175] = "ShoulderSlot",
-	[78180] = "ShoulderSlot",
-
-	[78178] = "HandsSlot",
-	[78173] = "HandsSlot",
-	[78183] = "HandsSlot",
-		-- Heroic
-	[78847] = "ChestSlot",
-	[78849] = "ChestSlot",
-	[78848] = "ChestSlot",
-
-	[78856] = "LegsSlot",
-	[78857] = "LegsSlot",
-	[78858] = "LegsSlot",
-
-	[78850] = "HeadSlot",
-	[78851] = "HeadSlot",
-	[78852] = "HeadSlot",
-
-	[78859] = "ShoulderSlot",
-	[78860] = "ShoulderSlot",
-	[78861] = "ShoulderSlot",
-
-	[78853] = "HandsSlot",
-	[78854] = "HandsSlot",
-	[78855] = "HandsSlot",
-
-	-- TIER 12 - Firelands -------------------------
-		--Normal  (Some tiers where bought for JP)
-	[71668] = "HeadSlot",
-	[71675] = "HeadSlot",
-	[71682] = "HeadSlot",
-
-	[71674] = "ShoulderSlot",
-	[71681] = "ShoulderSlot",
-	[71688] = "ShoulderSlot",
-
-		--Heroic
-	[71672] = "ChestSlot",
-	[71679] = "ChestSlot",
-	[71686] = "ChestSlot",
-
-	[71678] = "LegsSlot",
-	[71671] = "LegsSlot",
-	[71685] = "LegsSlot",
-
-	[71677] = "HeadSlot",
-	[71670] = "HeadSlot",
-	[71684] = "HeadSlot",
-
-	[71673] = "ShoulderSlot",
-	[71680] = "ShoulderSlot",
-	[71687] = "ShoulderSlot",
-
-	[71669] = "HandsSlot",
-	[71676] = "HandsSlot",
-	[71683] = "HandsSlot",
+	-- TIER 7 Naxx, OS, EoE
+	[40616] = "HeadSlot", -- priest, pala, lock 10
+	[40631] = "HeadSlot", -- priest, pala, lock 25
+	[40617] = "HeadSlot", -- warrior, hunter, shammy 10
+	[40631] = "HeadSlot", -- warrior, hunter, shammy 25
+	[40618] = "HeadSlot", -- rogue, DK, mage, druid 10
+	[40633] = "HeadSlot", -- rogue, DK, mage, druid 10
+
+	[40610] = "ChestSlot", -- priest, pala, lock 10
+	[40625] = "ChestSlot", -- priest, pala, lock 25
+	[40611] = "ChestSlot", -- warrior, hunter, shammy 10
+	[40626] = "ChestSlot", -- warrior, hunter, shammy 25
+	[40612] = "ChestSlot", -- rogue, DK, mage, druid 10
+	[40627] = "ChestSlot", -- rogue, DK, mage, druid 25
+
+	[40622] = "ShoulderSlot", -- priest, pala, lock 10
+	[40637] = "ShoulderSlot", -- priest, pala, lock 25
+	[40623] = "ShoulderSlot", -- warrior, hunter, shammy 10
+	[40638] = "ShoulderSlot", -- warrior, hunter, shammy 10
+	[40624] = "ShoulderSlot", -- rogue, DK, mage, druid 10
+	[40639] = "ShoulderSlot", -- rogue, DK, mage, druid 25
+
+	[40619] = "LegsSlot", -- priest, pala, lock 10
+	[40619] = "LegsSlot", -- priest, pala, lock 25
+	[40620] = "LegsSlot", -- warrior, hunter, shammy 10
+	[40635] = "LegsSlot", -- warrior, hunter, shammy 25
+	[40621] = "LegsSlot", -- rogue, DK, mage, druid 10
+	[40636] = "LegsSlot", -- rogue, DK, mage, druid 25
+
+	[40613] = "HandsSlot", -- priest, pala, lock 10
+	[40628] = "HandsSlot", -- priest, pala, lock 25
+	[40614] = "HandsSlot", -- warrior, hunter, shammy 10
+	[40629] = "HandsSlot", -- warrior, hunter, shammy 25
+	[40615] = "HandsSlot", -- rogue, DK, mage, druid 10
+	[40630] = "HandsSlot", -- rogue, DK, mage, druid 10
 
 
 	 -- TIER 8 - Ulduar -------------------------------
@@ -366,34 +86,194 @@ RCTokenTable = {
 	[45656] = "ShoulderSlot",
 	[45657] = "ShoulderSlot",
 	[45658] = "ShoulderSlot",
+	
+	
+	-- TIER 9 - ToGC
+	[47557] = "ChestSlot", --Paladin, Priest, Warlock
+	[47558] = "ChestSlot", --Warrior, Hunter, Shaman
+	[47559] = "ChestSlot", -- Rogue, Death Knight, Mage, 
+	
+	[47557] = "ShoulderSlot", --Paladin, Priest, Warlock
+	[47558] = "ShoulderSlot", --Warrior, Hunter, Shaman
+	[47559] = "ShoulderSlot", -- Rogue, Death Knight, Mage, Druid
+	
+	[47557] = "HandsSlot", --Paladin, Priest, Warlock
+	[47558] = "HandsSlot", --Warrior, Hunter, Shaman
+	[47559] = "HandsSlot", -- Rogue, Death Knight, Mage, Druid
+	
+	
+	[47557] = "LegsSlot", --Paladin, Priest, Warlock
+	[47558] = "LegsSlot", --Warrior, Hunter, Shaman
+	[47559] = "LegsSlot", -- Rogue, Death Knight, Mage, Druid
+	
+	
+	[47557] = "HeadSlot", --Paladin, Priest, Warlock
+	[47558] = "HeadSlot", --Warrior, Hunter, Shaman
+	[47559] = "HeadSlot", -- Rogue, Death Knight, Mage, Druid
+	
+	
+	-- TIER 10 - ICC
+	[52025] = "HeadSlot", --  Rogue, Death Knight, Mage, Druid
+	[52028] = "HeadSlot", --  Rogue, Death Knight, Mage, Druid HC
+	[52025] = "HandsSlot", --  Rogue, Death Knight, Mage, Druid
+	[52028] = "HandsSlot", --  Rogue, Death Knight, Mage, Druid HC
+	[52025] = "LegsSlot", --  Rogue, Death Knight, Mage, Druid
+	[52028] = "LegsSlot", --  Rogue, Death Knight, Mage, Druid HC
+	[52025] = "ShoulderSlot", --  Rogue, Death Knight, Mage, Druid
+	[52028] = "ShoulderSlot", --  Rogue, Death Knight, Mage, Druid HC
+	[52025] = "ChestSlot", --  Rogue, Death Knight, Mage, Druid
+	[52028] = "ChestSlot", --  Rogue, Death Knight, Mage, Druid HC
+	
+	
+	[52026] = "HeadSlot", --  Warrior, Hunter, Shaman
+	[52029] = "HeadSlot", --  Warrior, Hunter, Shaman HC
+	[52026] = "HandsSlot", --  RWarrior, Hunter, Shaman
+	[52029] = "HandsSlot", --  Warrior, Hunter, Shaman HC
+	[52026] = "LegsSlot", --  Warrior, Hunter, Shaman
+	[52029] = "LegsSlot", --  Warrior, Hunter, Shaman HC
+	[52026] = "ShoulderSlot", --  Warrior, Hunter, Shaman
+	[52029] = "ShoulderSlot", --  Warrior, Hunter, Shaman HC
+	[52026] = "ChestSlot", --  Warrior, Hunter, Shaman
+	[52029] = "ChestSlot", --  Warrior, Hunter, Shaman HC
+	
+	[52027] = "HeadSlot", --  Paladin, Priest, Warlock
+	[52030] = "HeadSlot", --  Paladin, Priest, Warlock HC
+	[52027] = "HandsSlot", --  Paladin, Priest, Warlock
+	[52030] = "HandsSlot", --  Paladin, Priest, Warlock HC
+	[52027] = "LegsSlot", --  Paladin, Priest, Warlock
+	[52030] = "LegsSlot", --  Paladin, Priest, Warlock HC
+	[52027] = "ShoulderSlot", -- Paladin, Priest, Warlock
+	[52030] = "ShoulderSlot", -- Paladin, Priest, Warlock HC
+	[52027] = "ChestSlot", --  Paladin, Priest, Warlock
+	[52030] = "ChestSlot", --  Paladin, Priest, Warlock HC
+	
 }
 
+local VANQUISHER = {"DEATHKNIGHT", "DRUID", "MAGE", "ROGUE"}
+local CONQUEROR = {"PALADIN", "PRIEST", "WARLOCK"}
+local PROTECTOR = {"HUNTER", "SHAMAN", "WARRIOR"}
 -- Classes that can use the token
 RCTokenClasses = {
-	--[xxxxxx] = {classes that can use the token},
-
-	-- TIER 18	Hellfire Citadel
-	[127953] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
-	[127962] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
-	[127963] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
-
-	[127955] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
-	[127960] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
-	[127965] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
-
-	[127956] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
-	[127959] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
-	[127966] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
-
-	[127957] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
-	[127961] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
-	[127967] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
-
-	[127954] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
-	[127958] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
-	[127964] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
-
-	[127968] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
-	[127969] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
-	[127970] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
+	-- TIER 7
+	[40616] = CONQUEROR
+	[40631] = CONQUEROR
+	[40617] = PROTECTOR
+	[40631] = PROTECTOR
+	[40618] = VANQUISHER
+	[40633] = VANQUISHER
+	[40610] = CONQUEROR
+	[40625] = CONQUEROR
+	[40611] = PROTECTOR
+	[40626] = PROTECTOR
+	[40612] = VANQUISHER
+	[40627] = VANQUISHER
+	[40622] = CONQUEROR
+	[40637] = CONQUEROR
+	[40623] = PROTECTOR
+	[40638] = PROTECTOR
+	[40624] = VANQUISHER
+	[40639] = VANQUISHER
+	[40619] = CONQUEROR
+	[40619] = CONQUEROR
+	[40620] = PROTECTOR
+	[40635] = PROTECTOR
+	[40621] = VANQUISHER
+	[40636] = VANQUISHER
+	[40613] = CONQUEROR
+	[40628] = CONQUEROR
+	[40614] = PROTECTOR
+	[40629] = PROTECTOR
+	[40615] = VANQUISHER
+	[40630] = VANQUISHER
+	-- TIER 8
+	-- Normal
+	[45635] = CONQUEROR
+	[45636] = PROTECTOR
+	[45637] = VANQUISHER
+	[45647] = CONQUEROR
+	[45648] = PROTECTOR
+	[45649] = VANQUISHER
+	[45644] = CONQUEROR
+	[45645] = PROTECTOR
+	[45646] = VANQUISHER
+	[45650] = CONQUEROR
+	[45651] = PROTECTOR
+	[45652] = VANQUISHER
+	[45659] = CONQUEROR
+	[45660] = PROTECTOR
+	[45661] = VANQUISHER
+	-- Heroic
+	[45632] = CONQUEROR
+	[45633] = PROTECTOR
+	[45634] = VANQUISHER
+	[45638] = CONQUEROR
+	[45639] = PROTECTOR
+	[45640] = VANQUISHER
+	[45641] = CONQUEROR
+	[45642] = PROTECTOR
+	[45643] = VANQUISHER
+	[45653] = CONQUEROR
+	[45654] = PROTECTOR
+	[45655] = VANQUISHER
+	[45656] = CONQUEROR
+	[45657] = PROTECTOR
+	[45658] = VANQUISHER
+		
+	-- TIER 9
+	[47557] = CONQUEROR
+	[47558] = PROTECTOR
+	[47559] = VANQUISHER
+		
+	[47557] = CONQUEROR
+	[47558] = PROTECTOR
+	[47559] = VANQUISHER
+		
+	[47557] = CONQUEROR
+	[47558] = PROTECTOR
+	[47559] = VANQUISHER
+		
+		
+	[47557] = CONQUEROR
+	[47558] = PROTECTOR
+	[47559] = VANQUISHER
+		
+		
+	[47557] = CONQUEROR
+	[47558] = PROTECTOR
+	[47559] = VANQUISHER
+		
+	-- TIER 10
+	[52025] = VANQUISHER
+	[52028] = VANQUISHER
+	[52025] = VANQUISHER
+	[52028] = VANQUISHER
+	[52025] = VANQUISHER
+	[52028] = VANQUISHER
+	[52025] = VANQUISHER
+	[52028] = VANQUISHER
+	[52025] = VANQUISHER
+	[52028] = VANQUISHER
+		
+		
+	[52026] = PROTECTOR
+	[52029] = PROTECTOR
+	[52026] = PROTECTOR
+	[52029] = PROTECTOR
+	[52026] = PROTECTOR
+	[52029] = PROTECTOR
+	[52026] = PROTECTOR
+	[52029] = PROTECTOR
+	[52026] = PROTECTOR
+	[52029] = PROTECTOR
+		
+	[52027] = CONQUEROR
+	[52030] = CONQUEROR
+	[52027] = CONQUEROR
+	[52030] = CONQUEROR
+	[52027] = CONQUEROR
+	[52030] = CONQUEROR
+	[52027] = CONQUEROR
+	[52030] = CONQUEROR
+	[52027] = CONQUEROR
+	[52030] = CONQUEROR
 }
