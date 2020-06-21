@@ -66,6 +66,9 @@ function RCLootCouncil:OnInitialize()
 
 	self.council = {} -- council from ML
 	self.mldb = {} -- db recived from ML
+	self.mlhistory = {} -- history received from ML
+	self.successful_history_requests = {} -- for the master looter, history requests that were done successfully 
+
 	self.responses = {
 		NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = L["Not announced"],},
 		ANNOUNCED		= { color = {1,0,1,1},				sort = 502,		text = L["Loot announced, waiting for answer"], },
@@ -215,6 +218,7 @@ function RCLootCouncil:OnInitialize()
 	self:RegisterChatCommand("rc", "ChatCommand")
   	self:RegisterChatCommand("rclc", "ChatCommand")
 	self:RegisterComm("RCLootCouncil")
+	self:RegisterComm("RCLootCouncil_WotLK")
 	self.db = LibStub("AceDB-3.0"):New("RCLootCouncilDB", self.defaults, true)
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
@@ -378,9 +382,9 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == 'config' or input == L["config"] or input == "c" then
 		-- Call it twice, because reasons..
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-		--LibStub("AceConfigDialog-3.0"):Open("RCLootCouncil")
+		--InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+		--InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+		LibStub("AceConfigDialog-3.0"):Open("RCLootCouncil")
 
 	elseif input == 'debug' or input == 'd' then
 		self.debug = not self.debug
@@ -394,8 +398,7 @@ function RCLootCouncil:ChatCommand(msg)
 		end
 
 	elseif input == 'council' or input == L["council"] then
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.ml)
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.ml)
+		LibStub("AceConfigDialog-3.0"):Open("RCLootCouncil")
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "mlSettings", "councilTab")
 
 
@@ -463,6 +466,13 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == 't' then -- Tester cmd
 		printtable(historyDB)
 --@end-debug@
+
+	elseif input == "share" then 
+		if self.isMasterLooter then
+
+		else 
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
 	else
 		self:ChatCommand("help")
 	end
@@ -479,13 +489,20 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	local serialized = self:Serialize(command, {...})
 	local compressed = Deflate:CompressDeflate(serialized, deflate_level)
 	local toSend = Deflate:EncodeForPrint(compressed)
+	local prio = "NORMAL"
+
+	if target == "groupfast" then 
+		target = "group"
+		prio = "ALERT"
+	end
+
 	if target == "group" then
 		if GetNumGroupMembers() > 0 then -- SendAddonMessage auto converts it to party is needed
-			self:SendCommMessage("RCLootCouncil", toSend, "RAID")
+			self:SendCommMessage("RCLootCouncil", toSend, "RAID", nil, prio)
 		--[[elseif num > 0 then -- Party
 			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")]]
 		else--if self.testMode then -- Alone (testing)
-			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
+			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName, prio)
 		end
 
 	elseif target == "guild" then
@@ -535,6 +552,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 		if test then
 			if command == "lootTable" then
+				self.isMasterLooter, self.masterLooter = self:GetML()
 				if self:UnitIsUnit(sender, self.masterLooter) then
 					local lootTable = unpack(data)
 					-- Send "DISABLED" response when not enabled
@@ -644,6 +662,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
 						self:GetActiveModule("votingframe"):EndSession()
 					end
+					self.successful_history_requests = {}
+					self.mlhistory = {}
 				else
 					self:Debug("Non ML:", sender, "sent end session command!")
 				end
@@ -657,7 +677,23 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			end
 			self:Debug("Error in deserializing comm:", command, data);
 		end
-	end
+	elseif prefix == "RCLootCouncil_WotLK" then 
+		local decoded_msg = Deflate:DecodeForPrint(serializedMsg)
+    	local decompressed_msg = Deflate:DecompressDeflate(decoded_msg)
+		local ok, command, data = self:Deserialize(decompressed_msg)
+		
+		if ok then 
+			if command == "verTest" then
+				local sendData = {select(2, UnitClass("player")), 1, self.version}
+				local serialized_data = self:Serialize(command, sendData)
+				local compressed_data = Deflate:CompressDeflate(serialized_data, deflate_level)
+				local encoded = Deflate:EncodeForPrint(compressed_data)
+				--self:SendCommMessage("RCLootCouncil_WotLK", encoded, "WHISPER", sender)
+				self:Print("i want to tell "..sender.." their version "..data[1].." is outdated")
+			end
+		end
+		
+	end   
 end
 
 -- Used to make sure "WHISPER" type xrealm comms is handled properly.
@@ -961,7 +997,7 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 	local diff = nil
 	if g1 then diff = (ilvl - select(4, GetItemInfo(g1))) end
 
-	local ilvl = GearScore_GetScore("player", UnitName("player")) or 0
+	local ilvl = GearScore_GetScore and GearScore_GetScore("player", UnitName("player")) or 0
 	return
 		session,
 		self.playerName,
@@ -1148,7 +1184,7 @@ function RCLootCouncil:GetML()
 		self:Debug("MasterLooter = ", name)
 		-- Check to see if we have recieved mldb within 10 secs, otherwise request it
 		self:ScheduleTimer("Timer", 10, "MLdb_check")
-		return IsMasterLooter(), name
+		return self:UnitIsUnit(name, "player"), name
 	end
 	return false, nil;
 end
@@ -1195,7 +1231,11 @@ function RCLootCouncil:Getdb()
 end
 
 function RCLootCouncil:GetHistoryDB()
-	return self.lootDB.factionrealm
+	if self.isMasterLooter then 
+		return self.lootDB.factionrealm
+	else 
+		return self.mlhistory 
+	end
 end
 
 function RCLootCouncil:GetAnnounceChannel(channel)

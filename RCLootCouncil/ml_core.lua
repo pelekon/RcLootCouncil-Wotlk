@@ -132,7 +132,6 @@ end
 function RCLootCouncilML:StartSession()
 	addon:Debug("ML:StartSession()")
 	self.running = true
-
 	addon:SendCommand("group", "lootTable", self.lootTable)
 
 	self:AnnounceItems()

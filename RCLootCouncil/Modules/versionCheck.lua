@@ -7,6 +7,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+local Deflate = LibStub("LibDeflate")
 
 function RCVersionCheck:OnInitialize()
 	-- Initialize scrollCols on self so others can change it

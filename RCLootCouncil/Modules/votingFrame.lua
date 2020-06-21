@@ -5,7 +5,7 @@
 --		Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0")
+local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Deflate = LibStub("LibDeflate")
@@ -98,7 +98,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 		local decompressed = Deflate:DecompressDeflate(decoded)
 		local test, command, data = addon:Deserialize(decompressed)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end
-
+		addon:Debug("Received data", command, data)
 		if test then
 			if command == "vote" then
 				if addon:IsCouncil(sender) or addon:UnitIsUnit(sender, addon.masterLooter) then
@@ -107,7 +107,20 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				else
 					addon:Debug("Non-council member (".. tostring(sender) .. ") sent a vote!")
 				end
-
+			
+			elseif command == "history_request" and addon.isMasterLooter then 
+				local requested_name = unpack(data)
+				if successful_history_requests[requested_name] then 
+					return 
+				end
+				successful_history_requests[requested_name] = true
+				addon:SendCommand("group", "update_history", requested_name, addon:GetHistoryDB()[requested_name] or {})
+			
+			elseif command == "update_history" and addon:UnitIsUnit(sender, addon.masterLooter) then
+				local entry_name, data = unpack(data) 
+				printtable(data)
+				addon.mlhistory[entry_name] = data
+			
 			elseif command == "change_response" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				local ses, name, response = unpack(data)
 				self:SetCandidateData(ses, name, "response", response)
@@ -353,15 +366,19 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 
 	--Extract loot history for that name
-	local lootDB = addon:GetHistoryDB()
+	local lootDB = addon.mlhistory
+	if addon.isMasterLooter then 
+		lootDB = addon:GetHistoryDB()
+	end
 	local hasWonMainspec, entry =false, nil
 	local nameCheck
 	if lootDB[name] then
 		nameCheck = true
 	end
+
 	tip:AddLine(name, color.r, color.g, color.b)
 	color = {} -- Color of the response
-	if nameCheck then -- they're in the DB!
+	if nameCheck and #lootDB[name] > 0 then -- they're in the DB!
 		tip:AddLine("")
 		local nonMainspecEntries = {}
 		for i = #lootDB[name], 1, -1 do -- Start from the end
@@ -410,7 +427,13 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			totalNum = totalNum + num
 		end
 		tip:AddDoubleLine(L["Total items received:"], totalNum, 0,1,1, 0,1,1)
-	else
+	elseif not nameCheck then
+		--request history for this specific guy
+		addon:SendCommand(addon.masterLooter, "history_request", name)
+		addon:Print("Requesting",name)
+		tip:AddLine("Requesting loot history from Master Looter...")
+		self:ScheduleTimer("UpdateMoreInfo", 1, row, data)
+	else 
 		tip:AddLine(L["No entries in the Loot History"])
 	end
 	tip:SetScale(db.UI.votingframe.scale-0.1) -- Make it a bit smaller, as it's too wide otherwise
