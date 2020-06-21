@@ -183,7 +183,7 @@ end
 function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local args = data[realrow].cols[column].args
 	if args.responseID and args.responseID ~= 0 and not args.isAwardReason then
-		frame.text:SetText(addon.responses[args.responseID].text)
+		frame.text:SetText((addon.db.profile.buttons[args.responseID] or addon.responses[args.responseID]).text)
 	else
 		frame.text:SetText(args.response)
 	end

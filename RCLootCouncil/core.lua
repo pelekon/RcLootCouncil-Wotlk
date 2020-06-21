@@ -678,13 +678,12 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 		local ok, command, data = self:Deserialize(decompressed_msg)
 		
 		if ok then 
-			if command == "verTest" then
+			if command == "verTest" and not UnitIsUnit(sender, "player") then
 				local sendData = {select(2, UnitClass("player")), 1, self.version}
 				local serialized_data = self:Serialize(command, sendData)
 				local compressed_data = Deflate:CompressDeflate(serialized_data, deflate_level)
 				local encoded = Deflate:EncodeForPrint(compressed_data)
-				--self:SendCommMessage("RCLootCouncil_WotLK", encoded, "WHISPER", sender)
-				self:Print("i want to tell "..sender.." their version "..data[1].." is outdated")
+				self:SendCommMessage("RCLootCouncil_WotLK", encoded, "WHISPER", sender)
 			end
 		end
 		
@@ -799,7 +798,7 @@ end
 	Used by getCurrentGear to determine slot types
 	Inspired by EPGPLootMaster
 --]]
-local INVTYPE_Slots = {
+RCLootCouncil.INVTYPE_Slots = {
 		INVTYPE_HEAD		    = "HeadSlot",
 		INVTYPE_NECK		    = "NeckSlot",
 		INVTYPE_SHOULDER	    = "ShoulderSlot",
@@ -839,7 +838,7 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc)
 		end
 		return item1, item2
 	end
-	local slot = INVTYPE_Slots[equipLoc]
+	local slot = self.INVTYPE_Slots[equipLoc]
 	if not slot then return nil, nil; end;
 	item1 = GetInventoryItemLink("player", GetInventorySlotInfo(slot[1] or slot))
 	if not item1 and slot['or'] then
@@ -990,9 +989,20 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note)
 	local g1, g2 = self:GetPlayersGear(link, equipLoc)
 	local diff = nil
-	if g1 then diff = (ilvl - select(4, GetItemInfo(g1))) end
+	if g1 then 
+		diff = (ilvl - select(4, GetItemInfo(g1))) 
+	end
+	if g1 and g2 then 
+		local g2diff = (ilvl - select(4, GetItemInfo(g2))) 
+		local test1, test2 = abs(diff), abs(g2diff) 
+		if test2 > test1 then 
+			diff = g2diff 
+		end
+	elseif g2 then  -- this shouldn't be possible but idk i dont wanna come back and fix it later if it somehow is
+		diff = (ilvl - select(4, GetItemInfo(g2)))
+	end
 
-	local ilvl = GearScore_GetScore and GearScore_GetScore("player", UnitName("player")) or 0
+	local ilvl = GearScore_GetScore and GearScore_GetScore("player", UnitName("player")) or "No GS"
 	return
 		session,
 		self.playerName,
@@ -1226,7 +1236,7 @@ function RCLootCouncil:Getdb()
 end
 
 function RCLootCouncil:GetHistoryDB()
-	if self.isMasterLooter then 
+	if self.isMasterLooter or not IsInGroup() then 
 		return self.lootDB.factionrealm
 	else 
 		return self.mlhistory 

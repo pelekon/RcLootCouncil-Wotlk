@@ -35,8 +35,8 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Response"],	comparesort = ResponseSort,						sortnext = 13,		width = 240},	-- 4 Response
 		{ name = L["ilvl"],														sortnext = 7,		width = 40},	-- 5 Total ilvl
 		{ name = L["Diff"],																			width = 40},	-- 6 ilvl difference
-		{ name = L["g1"],			align = "CENTER",							sortnext = 5,		width = 30},	-- 7 Current gear 1
-		{ name = L["g2"],			align = "CENTER",							sortnext = 5,		width = 30},	-- 8 Current gear 2
+		{ name = L["g1"],			align = "CENTER",							sortnext = 5,		width = ROW_HEIGHT},	-- 7 Current gear 1
+		{ name = L["g2"],			align = "CENTER",							sortnext = 5,		width = ROW_HEIGHT},	-- 8 Current gear 2
 		{ name = L["Votes"], 		align = "CENTER",							sortnext = 7,		width = 40},	-- 9 Number of votes
 		{ name = L["Vote"],			align = "CENTER",							sortnext = 10,		width = 60},	-- 10 Vote button
 		{ name = L["Notes"],		align = "CENTER",												width = 40},	-- 11 Note icon
@@ -113,7 +113,22 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					return 
 				end
 				successful_history_requests[requested_name] = true
-				addon:SendCommand("group", "update_history", requested_name, addon:GetHistoryDB()[requested_name] or {})
+				local playerDB = addon:GetHistoryDB()[requested_name] or {}
+				local response = {}
+				local count = 0
+
+				for i = 1, #playerDB do 
+					local entry = playerDB[i] 
+					-- respond with only max rolls and the players last 5 roll wins
+					if entry.responseID == 1 then 
+						tinsert(response, entry)
+					elseif not entry.isAwardReason and count < 5 then 
+						tinsert(response, entry)
+						count = count + 1
+					end
+				end
+
+				addon:SendCommand("group", "update_history", requested_name, response) -- tell everyone so we don't have to send this a bunch
 			
 			elseif command == "update_history" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				local entry_name, data = unpack(data) 
@@ -367,7 +382,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	if addon.isMasterLooter then 
 		lootDB = addon:GetHistoryDB()
 	end
-	local hasWonMainspec, entry =false, nil
+	local hasWonMainspec, entry = false, nil
 	local nameCheck
 	if lootDB[name] then
 		nameCheck = true
@@ -383,13 +398,18 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			-- check if we have won an item in this slot for a max roll
 			-- self.lootTable[session] = {	bagged, lootSlot, awarded, name, link, quality, ilvl, type, subType, equipLoc, texture, boe	}
 			local item_slot = lootTable[session].equipLoc
-			local itemid = select(3, strfind(entry.lootWon, "item:(%d+)"))
+			local itemid = tonumber(select(3, strfind(entry.lootWon, "item:(%d+)"))) or 0
 			local historical_item_slot = select(9, GetItemInfo(itemid))
 
-			if historical_item_slot == "" then 
-				historical_item_slot = RCTokenTable[itemid] or ""
+			if not historical_item_slot or historical_item_slot == "" then 
+				addon:Debug("Checking RCTokenTable for", itemid, RCTokenTable[itemid])
+				historical_item_slot = RCTokenTable[itemid]
+				if historical_item_slot then 
+					item_slot = addon.INVTYPE_Slots[item_slot]
+				end
 			end
-			
+
+			addon:Debug("Item", itemid, item_slot, historical_item_slot, hasWonMainspec)
 			if entry.responseID == 1 and not entry.isAwardReason and item_slot == historical_item_slot and not hasWonMainspec then -- Won MS roll for this slot
 				tip:AddDoubleLine(format(L["Item won for 'roll':"], addon:GetResponseText(entry.responseID)), "", 1,1,1, 1,1,1)
 				tip:AddLine(entry.lootWon)
@@ -411,10 +431,13 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		end -- end counting
 
 		if not hasWonMainspec then -- list non mainspec entries if we havent won a mainspec item
+			tip:AddLine(" ")
+			tip:AddLine("Last 5 items won:")
 			for _, entry in ipairs(nonMainspecEntries) do 
 				tip:AddDoubleLine(format(L["Won 'item'"], entry.lootWon), addon:GetResponseText(entry.responseID), 1,1,1, 1,1,1)
 				tip:AddDoubleLine(entry.time .. " " ..entry.date, format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), 1,1,1, 1,1,1)
 			end
+			tip:AddLine(" ")
 		end
 
 		local totalNum = 0
@@ -433,7 +456,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	else 
 		tip:AddLine(L["No entries in the Loot History"])
 	end
-	tip:SetScale(db.UI.votingframe.scale-0.1) -- Make it a bit smaller, as it's too wide otherwise
+	tip:SetScale(max(0.5, db.UI.votingframe.scale-0.1)) -- Make it a bit smaller, as it's too wide otherwise
 	tip:Show()
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end

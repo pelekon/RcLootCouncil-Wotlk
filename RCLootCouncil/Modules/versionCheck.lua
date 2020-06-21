@@ -8,6 +8,7 @@ local RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceCom
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Deflate = LibStub("LibDeflate")
+local deflate_level = {level = 9}
 
 function RCVersionCheck:OnInitialize()
 	-- Initialize scrollCols on self so others can change it
@@ -22,6 +23,7 @@ end
 function RCVersionCheck:OnEnable()
 	self.frame = self:GetFrame()
 	self:RegisterComm("RCLootCouncil")
+	self:RegisterComm("RCLootCouncil_WotLK")
 	self:Show()
 end
 
@@ -50,6 +52,13 @@ function RCVersionCheck:OnCommReceived(prefix, serializedMsg, distri, sender)
 		if test and command == "verTestReply" then
 			self:AddEntry(unpack(data))
 		end
+	elseif prefix == "RCLootCouncil_WotLK" then -- TODO: Remove later when everyone has updated.
+		local decoded_msg = Deflate:DecodeForPrint(serializedMsg)
+    	local decompressed_msg = Deflate:DecompressDeflate(decoded_msg)
+		local ok, command, data = addon:Deserialize(decompressed_msg)
+		if ok and command == "verTestReply" then 
+			self:AddEntry(sender, data[1], data[2], data[3], data[3])
+		end
 	end
 end
 
@@ -73,6 +82,14 @@ function RCVersionCheck:Query(group)
 		end
 	end
 	addon:SendCommand(group, "verTest", addon.version, addon.tVersion)
+	-- TODO: REMOVE LATER AFTER MOST HAVE UPGRADED
+	local serialized_data = addon:Serialize("verTest", {addon.version})
+    local compressed_data = Deflate:CompressDeflate(serialized_data, deflate_level)
+	local encoded = Deflate:EncodeForPrint(compressed_data)
+	if group == "group" then 
+		if IsInRaid() then group = "RAID" else group = "PARTY" end
+	end
+	addon:SendCommMessage("RCLootCouncil_WotLK", encoded, group)
 	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
 	self:ScheduleTimer("QueryTimer", 5)
 end
