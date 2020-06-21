@@ -733,7 +733,7 @@ function RCLootCouncil:Test(num)
 	self:Debug("Test", num)
 	local testItems = {}
 	for i = 1, 18 do 
-		local id = 40616-- GetInventoryItemID("player", i)
+		local id = GetInventoryItemID("player", i)
 		tinsert(testItems, id)
 	end
 	if #testItems == 0 then
