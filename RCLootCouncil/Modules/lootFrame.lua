@@ -86,8 +86,41 @@ function LootFrame:Update()
 			entries[numEntries].realID = k
 			entries[numEntries].link = v.link
 			entries[numEntries].icon:SetNormalTexture(v.texture)
+			entries[numEntries].icon:GetNormalTexture():SetTexCoord(0,1,0,1)
 			entries[numEntries].itemText:SetText(v.link)
 			entries[numEntries].itemLvl:SetText(format(L["ilvl: x"], v.ilvl))
+			local id = addon:GetItemIDFromLink(v.link)
+			if id then 
+				local slot = select(9, GetItemInfo(id))
+				local g1, g2 = addon:GetPlayersGear(v.link, slot)
+				g1 = addon:GetItemIDFromLink(g1)
+				if g2 then
+					g2 = addon:GetItemIDFromLink(g2)
+				end
+				if id ~= g1 and id ~= g2 then 
+					-- check for raid assist bis list
+					local RABisList = _G ["RaidAssistBisList"] 
+					if RABisList then 
+						local bis_list = RABisList:GetCharacterItemList()
+						if tContains(bis_list, id) then 
+							entries[numEntries]:SetBackdropColor(0.2, 1, 0.2, 0.4)
+							entries[numEntries].bis:SetText("This item is in your bis list") 
+						else 
+							entries[numEntries]:SetBackdropColor(1, 0.2, 0.2, 0)
+							entries[numEntries].bis:SetText("") 
+						end
+					else 
+						entries[numEntries]:SetBackdropColor(1, 0.2, 0.2, 0)
+						entries[numEntries].bis:SetText("") 
+					end
+				else
+					entries[numEntries]:SetBackdropColor(1, 0.2, 0.2, 0.5)
+					entries[numEntries].bis:SetText("You already have this item") 
+				end
+			end
+
+			
+
 			-- Update the buttons and get frame width
 			-- IDEA There might be a better way of doing this instead of SetText() on every update?
 			local but = entries[numEntries].buttons[addon.mldb.numButtons+1]
@@ -136,11 +169,22 @@ function LootFrame:GetEntry(entry)
 	local f = CreateFrame("Frame", nil, self.frame.content)
 	f:SetWidth(self.frame:GetWidth())
 	f:SetHeight(ENTRY_HEIGHT)
+	self.frame.title:SetFrameLevel(f:GetFrameLevel() + 1)
 	if entry == 1 then
 		f:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
 	else
 		f:SetPoint("TOPLEFT", entries[entry-1], "BOTTOMLEFT")
 	end
+
+	f:SetBackdrop({
+		--bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background",
+		 bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		tile = true, tileSize = 64, edgeSize = 12,
+		insets = { left = 2, right = 2, top = 2, bottom = 2 }
+	 })
+
+	 f:SetBackdropColor(0.2, 1, 0.2, 0)
 
 	local icon = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
 	icon:SetSize(ENTRY_HEIGHT*2/3, ENTRY_HEIGHT*2/3)
@@ -202,6 +246,12 @@ function LootFrame:GetEntry(entry)
 	ilvl:SetTextColor(1, 1, 1) -- White
 	ilvl:SetText("ilvl: 670")
 	f.itemLvl = ilvl
+
+	local bis = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	bis:SetPoint("RIGHT", ilvl, "LEFT", -2, 0)
+	bis:SetTextColor(0.2, 1, 0.2) -- green 
+	bis:SetText("")
+	f.bis = bis
 	return f
 end
 
