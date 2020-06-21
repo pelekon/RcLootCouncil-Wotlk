@@ -29,19 +29,18 @@ local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 
 function RCVotingFrame:OnInitialize()
 	self.scrollCols = {
-		{ name = "",															sortnext = 2,		width = 20, },	-- 1 Class
-		{ name = L["Name"],																			width = 120,},	-- 2 Candidate Name
-		{ name = L["Rank"],		comparesort = GuildRankSort,		sortnext = 5,		width = 95,},	-- 3 Guild rank
-		{ name = L["Role"],													sortnext = 5,		width = 55, },	-- 4 Role
-		{ name = L["Response"],	comparesort = ResponseSort,		sortnext = 13,		width = 240,},	-- 5 Response
-		{ name = L["ilvl"],													sortnext = 7,		width = 40, },	-- 6 Total ilvl
-		{ name = L["Diff"],																			width = 40, },	-- 7 ilvl difference
-		{ name = L["g1"],			align = "CENTER",						sortnext = 5,		width = 20, },	-- 8 Current gear 1
-		{ name = L["g2"],			align = "CENTER",						sortnext = 5,		width = 20, },	-- 9 Current gear 2
-		{ name = L["Votes"], 	align = "CENTER",						sortnext = 7,		width = 40, },	-- 10 Number of votes
-		{ name = L["Vote"],		align = "CENTER",						sortnext = 10,		width = 60, },	-- 11 Vote button
-		{ name = L["Notes"],		align = "CENTER",												width = 40, },	-- 12 Note icon
-		{ name = L["Roll"],		align = "CENTER", 					sortnext = 10,		width = 30, },	-- 13 Roll
+		{ name = "",															sortnext = 2,		width = 20},	-- 1 Class
+		{ name = L["Name"],																			width = 80},	-- 2 Candidate Name
+		{ name = L["Rank"],		comparesort = GuildRankSort,					sortnext = 5,		width = 95},	-- 3 Guild rank
+		{ name = L["Response"],	comparesort = ResponseSort,						sortnext = 13,		width = 240},	-- 4 Response
+		{ name = L["ilvl"],														sortnext = 7,		width = 40},	-- 5 Total ilvl
+		{ name = L["Diff"],																			width = 40},	-- 6 ilvl difference
+		{ name = L["g1"],			align = "CENTER",							sortnext = 5,		width = 30},	-- 7 Current gear 1
+		{ name = L["g2"],			align = "CENTER",							sortnext = 5,		width = 30},	-- 8 Current gear 2
+		{ name = L["Votes"], 		align = "CENTER",							sortnext = 7,		width = 40},	-- 9 Number of votes
+		{ name = L["Vote"],			align = "CENTER",							sortnext = 10,		width = 60},	-- 10 Vote button
+		{ name = L["Notes"],		align = "CENTER",												width = 40},	-- 11 Note icon
+		{ name = L["Roll"],			align = "CENTER", 							sortnext = 10,		width = 30},	-- 12 Roll
 	}
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -329,7 +328,6 @@ function RCVotingFrame:BuildST()
 				{ value = "",	DoCellUpdate = self.SetCellClass,		name = "class",},
 				{ value = "",	DoCellUpdate = self.SetCellName,			name = "name",},
 				{ value = "",	DoCellUpdate = self.SetCellRank,			name = "rank",},
-				{ value = "",	DoCellUpdate = self.SetCellRole,			name = "role",},
 				{ value = "",	DoCellUpdate = self.SetCellResponse,	name = "response",},
 				{ value = "",	DoCellUpdate = self.SetCellIlvl,			name = "ilvl",},
 				{ value = "",	DoCellUpdate = self.SetCellDiff,			name = "diff",},
@@ -710,14 +708,6 @@ function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, co
 	frame.text:SetText(lootTable[session].candidates[name].rank)
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response))
 	data[realrow].cols[column].value = lootTable[session].candidates[name].rank
-end
-
-function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	local name = data[realrow].name
-	local role = addon.TranslateRole(lootTable[session].candidates[name].role)
-	frame.text:SetText(role)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response))
-	data[realrow].cols[column].value = role
 end
 
 function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
