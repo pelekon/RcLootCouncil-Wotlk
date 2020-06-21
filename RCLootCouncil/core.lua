@@ -506,7 +506,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	else
 		if self:UnitIsUnit(target,"player") then -- If target == "player"
 			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
-		else
+		elseif target then
 			-- We cannot send "WHISPER" to a crossrealm player
 			if target:find("-") then
 				if target:find(self.realmName) then -- Our own realm, just send it
@@ -655,7 +655,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Print(format(L["'player' has ended the session"], self.masterLooter))
 					self:GetActiveModule("lootframe"):Disable()
 					if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
-						self:GetActiveModule("votingframe"):EndSession()
+						self:GetActiveModule("votingframe"):EndSession(true)
 					end
 					self.successful_history_requests = {}
 					self.mlhistory = {}
@@ -817,6 +817,7 @@ RCLootCouncil.INVTYPE_Slots = {
 		INVTYPE_WEAPON		    = {"MainHandSlot","SecondaryHandSlot"},
 		INVTYPE_THROWN		    = {"RangedSlot"},
 		INVTYPE_RANGED		    = {"RangedSlot"},
+		INVTYPE_RANGEDRIGHT		= {"RangedSlot"},
 		INVTYPE_FINGER		    = {"Finger0Slot","Finger1Slot"},
 		INVTYPE_HOLDABLE	    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"},

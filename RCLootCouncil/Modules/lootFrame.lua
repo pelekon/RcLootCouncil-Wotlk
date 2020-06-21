@@ -93,6 +93,7 @@ function LootFrame:Update()
 			if id then 
 				local slot = select(9, GetItemInfo(id))
 				local g1, g2 = addon:GetPlayersGear(v.link, slot)
+				addon:Debug("GetItemIDFromLink", slot, v.link, g1)
 				g1 = addon:GetItemIDFromLink(g1)
 				if g2 then
 					g2 = addon:GetItemIDFromLink(g2)

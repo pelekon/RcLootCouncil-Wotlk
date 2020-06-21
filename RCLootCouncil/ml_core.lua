@@ -439,7 +439,8 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			addon:Print(format(L["The item would now be awarded to 'player'"], winner))
 			self.lootTable[session].awarded = true
 			if self:HasAllItemsBeenAwarded() then
-				 addon:Print(L["All items has been awarded and  the loot session concluded"])
+				 addon:Print(L["All items have been awarded and  the loot session concluded"])
+				 self:EndSession()
 			end
 		end
 		return true

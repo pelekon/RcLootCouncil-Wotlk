@@ -109,10 +109,10 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 			
 			elseif command == "history_request" and addon.isMasterLooter then 
 				local requested_name = unpack(data)
-				if successful_history_requests[requested_name] then 
+				if addon.successful_history_requests[requested_name] then 
 					return 
 				end
-				successful_history_requests[requested_name] = true
+				addon.successful_history_requests[requested_name] = true
 				local playerDB = addon:GetHistoryDB()[requested_name] or {}
 				local response = {}
 				local count = 0
@@ -378,10 +378,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 
 	--Extract loot history for that name
-	local lootDB = addon.mlhistory
-	if addon.isMasterLooter then 
-		lootDB = addon:GetHistoryDB()
-	end
+	local lootDB = addon:GetHistoryDB()
 	local hasWonMainspec, entry = false, nil
 	local nameCheck
 	if lootDB[name] then
@@ -447,10 +444,9 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			totalNum = totalNum + num
 		end
 		tip:AddDoubleLine(L["Total items received:"], totalNum, 0,1,1, 0,1,1)
-	elseif not nameCheck then
+	elseif not nameCheck and not addon.isMasterLooter then
 		--request history for this specific guy
 		addon:SendCommand(addon.masterLooter, "history_request", name)
-		addon:Print("Requesting",name)
 		tip:AddLine("Requesting loot history from Master Looter...")
 		self:ScheduleTimer("UpdateMoreInfo", 1, row, data)
 	else 
