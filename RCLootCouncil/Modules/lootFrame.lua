@@ -116,7 +116,7 @@ end
 function LootFrame:OnRoll(entry, button)
 	addon:Debug("LootFrame:OnRoll", entry, button, "Response:", addon:GetResponseText(button))
 	local index = entries[entry].realID
-
+	
 	addon:SendCommand("group", "response", addon:CreateResponse(items[index].session, items[index].link, items[index].ilvl, button, items[index].equipLoc, items[index].note))
 
 	numRolled = numRolled + 1

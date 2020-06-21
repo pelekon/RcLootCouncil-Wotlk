@@ -65,6 +65,11 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 		return
 	end
+
+	if RCTokenTable[item] then 
+		ilvl = RCTokenLevel[item] 
+	end
+
 	self.lootTable[index or #self.lootTable + 1] = {
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
