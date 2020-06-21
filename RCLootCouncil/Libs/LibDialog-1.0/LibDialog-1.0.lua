@@ -389,7 +389,7 @@ end
 local function EditBox_OnEnterPressed(editbox)
     if not editbox.autoCompleteParams or not _G.AutoCompleteEditBox_OnEnterPressed(editbox) then
         local dialog = editbox:GetParent()
-        local on_enter_pressed = dialog.delegate.editboxes[editbox:GetID()].on_enter_pressed
+        local on_enter_pressed = dialog.delegate.editboxes[editbox:GetID()] and dialog.delegate.editboxes[editbox:GetID()].on_enter_pressed
 
         if on_enter_pressed then
             on_enter_pressed(editbox, dialog.data)
@@ -399,7 +399,7 @@ end
 
 local function EditBox_OnEscapePressed(editbox)
     local dialog = editbox:GetParent()
-    local on_escape_pressed = dialog.delegate.editboxes[editbox:GetID()].on_escape_pressed
+    local on_escape_pressed = dialog.delegate.editboxes[editbox:GetID()] and dialog.delegate.editboxes[editbox:GetID()].on_escape_pressed
 
     if on_escape_pressed then
         on_escape_pressed(editbox, dialog.data)
@@ -408,7 +408,7 @@ end
 
 local function EditBox_OnShow(editbox)
     local dialog = editbox:GetParent()
-    local on_show = dialog.delegate.editboxes[editbox:GetID()].on_show
+    local on_show = dialog.delegate.editboxes[editbox:GetID()] and dialog.delegate.editboxes[editbox:GetID()].on_show
 
     if on_show then
         on_show(editbox, dialog.data)
@@ -418,7 +418,7 @@ end
 local function EditBox_OnTextChanged(editbox, user_input)
     if not editbox.autoCompleteParams or not _G.AutoCompleteEditBox_OnTextChanged(editbox, user_input) then
         local dialog = editbox:GetParent()
-        local on_text_changed = dialog.delegate.editboxes[editbox:GetID()].on_text_changed
+        local on_text_changed = dialog.delegate.editboxes[editbox:GetID()] and dialog.delegate.editboxes[editbox:GetID()].on_text_changed
 
         if on_text_changed then
             on_text_changed(editbox, dialog.data)

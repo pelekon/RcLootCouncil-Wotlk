@@ -118,7 +118,6 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 			
 			elseif command == "update_history" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				local entry_name, data = unpack(data) 
-				printtable(data)
 				addon.mlhistory[entry_name] = data
 			
 			elseif command == "change_response" and addon:UnitIsUnit(sender, addon.masterLooter) then
