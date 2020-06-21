@@ -184,13 +184,8 @@ function RCLootCouncil:OnInitialize()
 
 			-- List of items to ignore:
 			ignore = {
-				109693, -- Draenic Dust
-				115502, -- Small Luminous Shard
-				111245, -- Luminous Shard
-				115504, -- Fractured Temporal Crystal
-				113588, -- Temporal Crystal
-				124442, -- Chaos Crystal (Legion)
-				124441, -- Leylight Shard (Legion)
+				43345, -- Dragon Hide Backpack
+				43347, -- Satchel of Spoils 
 			},
 		},
 	} -- defaults end
