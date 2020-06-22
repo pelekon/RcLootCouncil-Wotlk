@@ -68,6 +68,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 
 	if RCTokenTable[item] then 
 		ilvl = RCTokenLevel[item] 
+		equipLoc = RCTokenTable[item]
 	end
 
 	self.lootTable[index or #self.lootTable + 1] = {

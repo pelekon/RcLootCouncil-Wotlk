@@ -401,12 +401,9 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			if not historical_item_slot or historical_item_slot == "" then 
 				addon:Debug("Checking RCTokenTable for", itemid, RCTokenTable[itemid])
 				historical_item_slot = RCTokenTable[itemid]
-				if historical_item_slot then 
-					item_slot = addon.INVTYPE_Slots[item_slot]
-				end
 			end
 
-			addon:Debug("Item", itemid, item_slot, historical_item_slot, hasWonMainspec)
+			addon:Debug("Item", itemid, "item_slot", item_slot, "historic_item_slot", historical_item_slot,"has won mainspec", hasWonMainspec)
 			if entry.responseID == 1 and not entry.isAwardReason and item_slot == historical_item_slot and not hasWonMainspec then -- Won MS roll for this slot
 				tip:AddDoubleLine(format(L["Item won for 'roll':"], addon:GetResponseText(entry.responseID)), "", 1,1,1, 1,1,1)
 				tip:AddLine(entry.lootWon)
