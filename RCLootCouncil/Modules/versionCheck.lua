@@ -88,6 +88,8 @@ function RCVersionCheck:Query(group)
 	local encoded = Deflate:EncodeForPrint(compressed_data)
 	if group == "group" then 
 		if IsInRaid() then group = "RAID" else group = "PARTY" end
+	elseif group == "guild" then 
+		group = "GUILD" 
 	end
 	addon:SendCommMessage("RCLootCouncil_WotLK", encoded, group)
 	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself

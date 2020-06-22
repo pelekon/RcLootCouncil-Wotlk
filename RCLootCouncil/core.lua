@@ -680,7 +680,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 		if ok then 
 			if command == "verTest" and not UnitIsUnit(sender, "player") then
 				local sendData = {select(2, UnitClass("player")), 1, self.version}
-				local serialized_data = self:Serialize(command, sendData)
+				local serialized_data = self:Serialize("verTestReply", sendData)
 				local compressed_data = Deflate:CompressDeflate(serialized_data, deflate_level)
 				local encoded = Deflate:EncodeForPrint(compressed_data)
 				self:SendCommMessage("RCLootCouncil_WotLK", encoded, "WHISPER", sender)
