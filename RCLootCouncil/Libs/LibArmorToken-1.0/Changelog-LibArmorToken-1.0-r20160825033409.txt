@@ -1,0 +1,4 @@
+David Lynch:
+	- Syntax error on table insert
+	- Clean up syntax errors, having actually run it
+	- Initial commit

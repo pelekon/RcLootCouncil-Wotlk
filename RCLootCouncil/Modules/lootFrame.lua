@@ -8,6 +8,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+local LibToken = LibStub("LibArmorToken-1.0")
 
 local items = {} -- item.i = {name, link, lvl, texture} (i == session)
 local entries = {}
@@ -92,19 +93,50 @@ function LootFrame:Update()
 			local id = addon:GetItemIDFromLink(v.link)
 			if id then 
 				local slot = select(9, GetItemInfo(id))
+				if not slot or slot == "" then 
+					slot = RCTokenTable[id]
+				end
+
 				local g1, g2 = addon:GetPlayersGear(v.link, slot)
 				addon:Debug("GetItemIDFromLink", slot, v.link, g1)
-				g1 = addon:GetItemIDFromLink(g1)
+				if g1 then -- incase someone is doing loot council naked? lol
+					g1 = addon:GetItemIDFromLink(g1)
+				end
 				if g2 then
 					g2 = addon:GetItemIDFromLink(g2)
 				end
-				if id ~= g1 and id ~= g2 then 
+
+				local HasTokenItem = false 
+				local is_token = LibToken:ItemIsToken(id)
+				local _, class = UnitClass("player")
+
+				if is_token and g1 then
+					HasTokenItem = id == LibToken:FindTokenForItemByClass(g1, class)
+				end
+
+				if not HasTokenItem and (id ~= g1 and id ~= g2) then 
 					-- check for raid assist bis list
 					local RABisList = _G ["RaidAssistBisList"] 
 					if RABisList then 
 						local bis_list = RABisList:GetCharacterItemList()
-						if tContains(bis_list, id) then 
-							entries[numEntries]:SetBackdropColor(0.2, 1, 0.2, 0.4)
+						local in_list = false 
+						-- if its a token, check if any of the token items for this class are in the bis list
+						if is_token then 
+							for _, itemid in LibToken:IterateItemsForTokenAndClass(id, class) do 
+								addon:Print("check", id, itemid)
+								if tContains(bis_list, itemid) then
+									addon:Print("is in list")
+									in_list = true 
+									break
+								end
+							end
+						else
+							-- else just check if the item is in the bislist
+							in_list = tContains(bis_list, id) 
+						end
+
+						if in_list then 
+							entries[numEntries]:SetBackdropColor(0.2, 1, 0.2, 0.3)
 							entries[numEntries].bis:SetText("This item is in your bis list") 
 						else 
 							entries[numEntries]:SetBackdropColor(1, 0.2, 0.2, 0)
@@ -115,7 +147,7 @@ function LootFrame:Update()
 						entries[numEntries].bis:SetText("") 
 					end
 				else
-					entries[numEntries]:SetBackdropColor(1, 0.2, 0.2, 0.5)
+					entries[numEntries]:SetBackdropColor(1, 0.2, 0.2, 0.4)
 					entries[numEntries].bis:SetText("You already have this item") 
 				end
 			end

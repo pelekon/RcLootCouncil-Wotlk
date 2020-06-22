@@ -824,6 +824,38 @@ RCLootCouncil.INVTYPE_Slots = {
 		INVTYPE_RELIC			= {"RangedSlot"}
 }
 
+RCLootCouncil.Slots_INVTYPE = {
+	["HeadSlot"]			= INVTYPE_HEAD,
+	["NeckSlot"]			= INVTYPE_NECK,
+	["ShoulderSlot"]		= INVTYPE_SHOULDER,
+	["BackSlot"]			= INVTYPE_CLOAK,
+	["ChestSlot"]			= INVTYPE_CHEST,
+	["WristSlot"]			= INVTYPE_WRIST,
+	["HandsSlot"]			= INVTYPE_HAND,
+	["WaistSlot"]			= INVTYPE_WAIST,
+	["LegsSlot"]			= INVTYPE_LEGS,
+	["FeetSlot"]			= INVTYPE_FEET,
+	["SecondaryHandSlot"] 	= INVTYPE_SHIELD,
+	["ChestSlot"]			= INVTYPE_ROBE,
+	["MainHandSlot"]		= INVTYPE_2HWEAPON,
+	["SecondaryHandSlot"]	= INVTYPE_2HWEAPON,
+	["MainHandSlot"]		= INVTYPE_WEAPONMAINHAN,
+	["SecondaryHandSlot"] 	= INVTYPE_WEAPONOFFHAN,
+	["MainHandSlot"]		= INVTYPE_WEAPONOFFHAN,
+	["MainHandSlot"]		= INVTYPE_WEAPON,
+	["SecondaryHandSlot"]	= INVTYPE_WEAPON,
+	["RangedSlot"]			= INVTYPE_THROWN,
+	["RangedSlot"]			= INVTYPE_RANGED,
+	["RangedSlot"]			= INVTYPE_RANGEDRIGHT,
+	["Finger0Slot"]			= INVTYPE_FINGER,
+	["Finger1Slot"]			= INVTYPE_FINGER,
+	["SecondaryHandSlot"]	= INVTYPE_HOLDABLE,
+	["MainHandSlot"]		= INVTYPE_HOLDABLE,
+	["TRINKET0SLOT"]		= INVTYPE_TRINKET,
+	["TRINKET1SLOT"]		= INVTYPE_TRINKET,
+	["RangedSlot"]			= INVTYPE_RELIC,
+}
+
 function RCLootCouncil:GetPlayersGear(link, equipLoc)
 	local itemID = self:GetItemIDFromLink(link) -- Convert to itemID
 	self:DebugLog("GetPlayersGear", itemID, equipLoc)
@@ -839,7 +871,17 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc)
 		end
 		return item1, item2
 	end
+
+	if type(equipLoc) == "table" then -- if you're looking to fix t9 and 10 tokens, look here :)
+		return nil, nil
+	end
+
 	local slot = self.INVTYPE_Slots[equipLoc]
+
+	if not slot and self.Slots_INVTYPE[equipLoc] then 
+		slot = equipLoc
+	end
+
 	if not slot then return nil, nil; end;
 	item1 = GetInventoryItemLink("player", GetInventorySlotInfo(slot[1] or slot))
 	if not item1 and slot['or'] then

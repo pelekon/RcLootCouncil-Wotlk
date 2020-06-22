@@ -19,6 +19,7 @@
   <Include file="Libs\LibDeflate\Lib.xml"/>
   <Include file="Libs\LibGroupTalents-1.0\lib.xml"/>
   <Include file="Libs\LibDialog-1.0\LibDialog-1.0.xml" />
+  <Include file="Libs\LibArmorToken-1.0\lib.xml" />
   <Script file="Libs\LibWindow-1.1\LibWindow-1.1.lua" />
   <Include file="Libs\lib-st\lib-st.xml" />
   <Include file="Libs\DropDownMenu\UIDropDownMenuTemplates.xml" />
