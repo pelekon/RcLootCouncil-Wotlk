@@ -245,7 +245,7 @@ end
 function RCLootCouncil:OnEnable()
 	-- Register the player's name
 	self.realmName = GetRealmName()
-	self.playerName = self:UnitName("player")
+	self.playerName = UnitName("player")
 	self:DebugLog(self.playerName, self.version, self.tVersion)
 
 	-- register events
@@ -492,8 +492,10 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	end
 
 	if target == "group" then
-		if GetNumGroupMembers() > 0 then -- SendAddonMessage auto converts it to party is needed
+		if self:IsInRaid() then
 			self:SendCommMessage("RCLootCouncil", toSend, "RAID", nil, prio)
+		elseif self:IsInGroup() then 
+			self:SendCommMessage("RCLootCouncil", toSend, "PARTY", nil, prio)
 		--[[elseif num > 0 then -- Party
 			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")]]
 		else--if self.testMode then -- Alone (testing)
@@ -536,7 +538,6 @@ end
 -- -- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
 function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
-		self:DebugLog("Comm received:", serializedMsg, "from:", sender, "distri:", distri)
 		-- data is always a table to be unpacked
 		local decoded = Deflate:DecodeForPrint(serializedMsg)
 		local decompressed = Deflate:DecompressDeflate(decoded)
@@ -544,7 +545,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 		-- NOTE: Since I can't find a better way to do this, all xrealms comms is routed through here
 		--			to make sure they get delivered properly. Must be included in every OnCommReceived() function.
 		if self:HandleXRealmComms(self, command, data, sender) then return end
-
+		self:DebugLog("Comm received:", command, "from:", sender, "distri:", distri)
 		if test then
 			if command == "lootTable" then
 				self.isMasterLooter, self.masterLooter = self:GetML()
@@ -698,7 +699,7 @@ function RCLootCouncil:HandleXRealmComms(mod, command, data, sender)
 		local target = tremove(data, 1)
 		if self:UnitIsUnit(target, "player") then
 			local command = tremove(data, 1)
-			mod:OnCommReceived("RCLootCouncil", self:Serialize(command, data), "WHISPER", self:UnitName(sender))
+			mod:OnCommReceived("RCLootCouncil", self:Serialize(command, data), "WHISPER", sender)
 		end
 		return true
 	end
@@ -1045,7 +1046,7 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 		diff = (ilvl - select(4, GetItemInfo(g2)))
 	end
 
-	local ilvl = GearScore_GetScore and GearScore_GetScore("player", UnitName("player")) or "No GS"
+	local ilvl = GearScore_GetScore and GearScore_GetScore("player", UnitName("player")) or 0
 	return
 		session,
 		self.playerName,
@@ -1082,8 +1083,8 @@ function RCLootCouncil:GetPlayerInfo()
 	return self.playerName, self.playerClass, self:GetPlayerRole(), self.guildRank, enchant, lvl
 end
 
-function RCLootCouncil:GetPlayerRole()
-	local gtrole = LibGroupTalents:GetUnitRole("player")
+function RCLootCouncil:GetUnitRole(unit)
+	local gtrole = LibGroupTalents:GetUnitRole(unit)
 	local role = "DAMAGER"
 	
 	if gtrole == "tank" then 
@@ -1093,6 +1094,10 @@ function RCLootCouncil:GetPlayerRole()
 	end
 
 	return role
+end
+
+function RCLootCouncil:GetPlayerRole()
+	return self:GetUnitRole("player")	
 end
 
 function RCLootCouncil.TranslateRole(role) -- reasons
@@ -1137,6 +1142,10 @@ function RCLootCouncil:OnEvent(event, ...)
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
 
+	elseif event == "RAID_ROSTER_UPDATE" then
+		self:Debug("Event:", event, ...)
+		self:NewMLCheck()
+
 	elseif event == "RAID_INSTANCE_WELCOME" then
 		self:Debug("Event:", event, ...)
 		-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
@@ -1145,7 +1154,13 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:Debug("Event:", event, ...)
+		local is_retry = ...
 		self:NewMLCheck()
+		if not self.masterLooter and not is_retry then -- retry once just incase it didn't send
+			self:ScheduleTimer("OnEvent", 1, "PLAYER_ENTERING_WORLD", true)
+			self:Debug("Retry PLAYER_ENTERING_WORLD")
+			return
+		end
 		-- Ask for data when we have done a /rl and have a ML
 		if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
 			self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
@@ -1165,7 +1180,7 @@ end
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	self.isMasterLooter, self.masterLooter = self:GetML()
-
+	self:Debug("isMasterLooter", self.isMasterLooter, "masterLooter", self.masterLooter)
 	if self:UnitIsUnit(old_ml, "player") and not self.isMasterLooter then
 		-- We were ML, but no longer, so disable masterlooter module
 		self:GetActiveModule("masterlooter"):Disable()
@@ -1215,7 +1230,7 @@ end
 -- Returns boolean, mlName. (true if the player is ML), (nil if there's no ML)
 function RCLootCouncil:GetML()
 	self:DebugLog("GetML()")
-	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
+	if self:GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
 		return true, self.playerName
 	end
 	local lootMethod, mlPartyID, mlRaidID = GetLootMethod()
@@ -1223,11 +1238,11 @@ function RCLootCouncil:GetML()
 	if lootMethod == "master" then
 		local name;
 		if mlRaidID then 				-- Someone in raid
-			name = self:UnitName("raid"..mlRaidID)
+			name = UnitName("raid"..mlRaidID)
 		elseif mlPartyID == 0 then -- Player in party
 			name = self.playerName
 		elseif mlPartyID then		-- Someone in party
-			name = self:UnitName("party"..mlPartyID)
+			name = UnitName("party"..mlPartyID)
 		end
 		self:Debug("MasterLooter = ", name)
 		-- Check to see if we have recieved mldb within 10 secs, otherwise request it
@@ -1238,7 +1253,7 @@ function RCLootCouncil:GetML()
 end
 
 function RCLootCouncil:IsCouncil(name)
-	local ret = tContains(self.council, self:UnitName(name))
+	local ret = tContains(self.council, name)
 	if self:UnitIsUnit(name, self.playerName) and self.isMasterLooter or self.nnp then ret = true end -- ML and nnp is always council
 	self:DebugLog(tostring(ret).." =", "IsCouncil", name)
 	return ret
@@ -1247,13 +1262,13 @@ end
 --- Returns a table containing the the council members in the group
 function RCLootCouncil:GetCouncilInGroup()
 	local council = {}
-	if IsInRaid() then
+	if self:IsInRaid() then
 		for k,v in ipairs(self.council) do
 			if UnitInRaid(v) then
 				tinsert(council, v)
 			end
 		end
-	elseif IsInGroup() then -- Party
+	elseif self:IsInGroup() then -- Party
 		for k,v in ipairs(self.council) do
 			if UnitInParty(v) then
 				tinsert(council, v)
@@ -1279,7 +1294,7 @@ function RCLootCouncil:Getdb()
 end
 
 function RCLootCouncil:GetHistoryDB()
-	if self.isMasterLooter or not IsInGroup() then 
+	if self.isMasterLooter or not self:IsInGroup() then 
 		return self.lootDB.factionrealm
 	else 
 		return self.mlhistory 
@@ -1307,18 +1322,6 @@ function RCLootCouncil:UnitIsUnit(unit1, unit2)
 		unit2 = unit2
 	end
 	return UnitIsUnit(unit1, unit2)
-end
-
--- We always want realm name when we call UnitName
--- Note: If 'unit' is a playername, that player must be in our raid or party!
---[[ NOTE I'm concerned about the UnitIsVisible() range thing with UnitName(),
- 	although testing in party doesn't seem to affect it. To counter this, it'll
-	return any "unit" with something after a "-" (i.e a name from GetRaidRosterInfo())
-	which means it isn't useable with all the "name-target" unitIDs]]
-function RCLootCouncil:UnitName(unit)
-	-- First strip any spaces
-	unit = gsub(unit, " ", "")
-	return UnitName(unit)
 end
 
 ---------------------------------------------------------------------------

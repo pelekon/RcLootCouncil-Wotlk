@@ -97,7 +97,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 		local decompressed = Deflate:DecompressDeflate(decoded)
 		local test, command, data = addon:Deserialize(decompressed)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end
-		addon:Debug("Received data", command, data)
+
+		addon:DebugLog("VotingComm received:", command, "from:", sender, "distri:", distri)
+
 		if test then
 			if command == "vote" then
 				if addon:IsCouncil(sender) or addon:UnitIsUnit(sender, addon.masterLooter) then
@@ -399,7 +401,6 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			local historical_item_slot = select(9, GetItemInfo(itemid))
 
 			if not historical_item_slot or historical_item_slot == "" then 
-				addon:Debug("Checking RCTokenTable for", itemid, RCTokenTable[itemid])
 				historical_item_slot = RCTokenTable[itemid]
 
 				if not addon.Slots_INVTYPE[item_slot] then -- when we are comparing a normal item with a token we won previously
@@ -411,7 +412,6 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 				end
 			end
 
-			addon:Debug("Item", itemid, "item_slot", item_slot, "historic_item_slot", historical_item_slot,"has won mainspec", hasWonMainspec)
 			if entry.responseID == 1 and not entry.isAwardReason and item_slot == historical_item_slot and not hasWonMainspec then -- Won MS roll for this slot
 				tip:AddDoubleLine(format(L["Item won for 'roll':"], addon:GetResponseText(entry.responseID)), "", 1,1,1, 1,1,1)
 				tip:AddLine(entry.lootWon)

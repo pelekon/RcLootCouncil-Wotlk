@@ -49,6 +49,9 @@ function RCVersionCheck:OnCommReceived(prefix, serializedMsg, distri, sender)
 		local decompressed = Deflate:DecompressDeflate(decoded)
 		local test, command, data = addon:Deserialize(decompressed)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end
+
+		addon:DebugLog("VersionCheckComm received:", command, "from:", sender, "distri:", distri)
+
 		if test and command == "verTestReply" then
 			self:AddEntry(unpack(data))
 		end
@@ -74,7 +77,7 @@ function RCVersionCheck:Query(group)
 		end
 
 	elseif group == "group" then
-		for i = 1, GetNumGroupMembers() do
+		for i = 1, addon:GetNumGroupMembers() do
 			local name, _, _, _, _, class, _, online = GetRaidRosterInfo(i)
 			if online then
 				self:AddEntry(name, class, L["Unknown"], L["Waiting for response"])
@@ -87,7 +90,7 @@ function RCVersionCheck:Query(group)
     local compressed_data = Deflate:CompressDeflate(serialized_data, deflate_level)
 	local encoded = Deflate:EncodeForPrint(compressed_data)
 	if group == "group" then 
-		if IsInRaid() then group = "RAID" else group = "PARTY" end
+		if addon:IsInRaid() then group = "RAID" else group = "PARTY" end
 	elseif group == "guild" then 
 		group = "GUILD" 
 	end

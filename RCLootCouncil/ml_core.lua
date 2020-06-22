@@ -29,6 +29,7 @@ function RCLootCouncilML:OnDisable()
 end
 
 function RCLootCouncilML:OnEnable()
+	addon:Debug("ML Enabled")
 	db = addon:Getdb()
 	self.candidates = {} 	-- candidateName = { class, role, rank }
 	self.lootTable = {} 		-- The MLs operating lootTable
@@ -96,7 +97,7 @@ function RCLootCouncilML:AddCandidate(name, class, role, rank, enchant, lvl)
 	addon:DebugLog("ML:AddCandidate",name, class, role, rank, enchant, lvl)
 	self.candidates[name] = {
 		["class"]		= class,
-		["role"]			= role,
+		["role"]			= role or "DAMAGER",
 		["rank"]			= rank or "", -- Rank cannot be nil for votingFrame
 		["enchanter"] 	= enchant,
 		["enchant_lvl"]= lvl,
@@ -114,18 +115,45 @@ function RCLootCouncilML:UpdateGroup(ask)
 	local group_copy = {}
 	local updates = false
 	for name in pairs(self.candidates) do	group_copy[name] = true end
-	for i = 1, GetNumGroupMembers() do
-		local name, _, _, _, _, class, _, _, _, _, _, role  = GetRaidRosterInfo(i)
-		name = addon:UnitName(name) -- Get their unambiguated name
-		if group_copy[name] then	-- If they're already registered
-			group_copy[name] = nil	-- remove them from the check
-		else -- add them
-			if not ask then -- ask for playerInfo?
-				addon:SendCommand(name, "playerInfoRequest")
-				addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
+
+	if addon:IsInRaid() then
+		for i = 1, addon:GetNumGroupMembers() do
+			local name, _, _, _, _, class, _, _, _, _, _ = GetRaidRosterInfo(i)
+			
+			if name then
+				local role = addon:GetUnitRole(name)
+				if group_copy[name] then	-- If they're already registered
+					group_copy[name] = nil	-- remove them from the check
+				else -- add them
+					if not ask then -- ask for playerInfo?
+						addon:SendCommand(name, "playerInfoRequest")
+						addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
+					end
+					self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
+					updates = true
+				end
 			end
-			self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
-			updates = true
+		end
+	elseif addon:IsInGroup() then 
+		for i = 0, addon:GetNumGroupMembers() do 
+			local name, class, role = nil, nil, nil
+			if i == 0 then 
+				name, class, role =  UnitName("player"), select(2, UnitClass("player")), addon:GetPlayerRole()
+			else
+				name, class, role =  UnitName("party"..i), select(2, UnitClass("party"..i)), addon:GetUnitRole("party"..i)
+			end
+			if name then 
+				if group_copy[name] then 
+					group_copy[name] = nil 
+				else
+					if not ask then -- ask for playerInfo?
+						addon:SendCommand(name, "playerInfoRequest")
+						addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
+					end
+					self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
+					updates = true
+				end
+			end
 		end
 	end
 	-- If anything's left in group_copy it means they left the raid, so lets remove them
@@ -274,6 +302,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 		local decompressed = Deflate:DecompressDeflate(decoded)
 		local test, command, data = addon:Deserialize(decompressed)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end
+		addon:DebugLog("MLComm received:", command, "from:", sender, "distri:", distri)
 
 		if test and addon.isMasterLooter then -- only ML receives these commands
 			if command == "playerInfo" then
@@ -566,7 +595,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 			return false
 		end
 	else
-		for i = 1, GetNumGroupMembers() do
+		for i = 1, addon:GetNumGroupMembers() do
 			if addon:UnitIsUnit(GetMasterLootCandidate(lootIndex, i), name) then
 				GiveMasterLoot(lootIndex,i)
 				awarded = true

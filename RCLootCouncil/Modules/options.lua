@@ -433,7 +433,7 @@ function addon:OptionsTable()
 										desc = L["auto_award_to_desc"],
 										width = "double",
 										type = "input",
-										hidden = function() return GetNumGroupMembers() > 0 end,
+										hidden = function() return addon:GetNumGroupMembers() > 0 end,
 										get = function() return self.db.profile.autoAwardTo; end,
 										set = function(i,v) self.db.profile.autoAwardTo = v; end,
 									},
@@ -446,13 +446,13 @@ function addon:OptionsTable()
 										style = "dropdown",
 										values = function()
 											local t = {}
-											for i = 1, GetNumGroupMembers() do
+											for i = 1, addon:GetNumGroupMembers() do
 												local name = GetRaidRosterInfo(i)
 												t[name] = name
 											end
 											return t;
 										end,
-										hidden = function() return GetNumGroupMembers() == 0 end,
+										hidden = function() return addon:GetNumGroupMembers() == 0 end,
 									},
 									autoAwardReason = {
 										order = 2.1,
@@ -790,9 +790,9 @@ function addon:OptionsTable()
 										width = "full",
 										values = function()
 											local t = {}
-											for i = 1, GetNumGroupMembers() do
+											for i = 1, addon:GetNumGroupMembers() do
 												local name = select(1,GetRaidRosterInfo(i))
-												t[self:UnitName(name)] = name
+												t[name] = name
 											end
 											if #t == 0 then t[self.playerName] = self.playerName end -- Insert ourself
 											table.sort(t, function(v1, v2)
