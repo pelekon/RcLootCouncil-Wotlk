@@ -76,10 +76,10 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
 		["awarded"]		= false,
-		["name"]			= name,
-		["link"]			= link,
+		["name"]		= name,
+		["link"]		= link,
 		["quality"]		= rarity,
-		["ilvl"]			= ilvl,
+		["ilvl"]		= ilvl,
 		["subType"]		= subType,
 		["equipLoc"]	= equipLoc,
 		["texture"]		= texture,
@@ -97,10 +97,10 @@ function RCLootCouncilML:AddCandidate(name, class, role, rank, enchant, lvl)
 	addon:DebugLog("ML:AddCandidate",name, class, role, rank, enchant, lvl)
 	self.candidates[name] = {
 		["class"]		= class,
-		["role"]			= role or "DAMAGER",
-		["rank"]			= rank or "", -- Rank cannot be nil for votingFrame
+		["role"]		= role or "DAMAGER",
+		["rank"]		= rank or "", -- Rank cannot be nil for votingFrame
 		["enchanter"] 	= enchant,
-		["enchant_lvl"]= lvl,
+		["enchant_lvl"]	= lvl,
 	}
 end
 

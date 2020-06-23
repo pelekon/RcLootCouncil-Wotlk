@@ -934,7 +934,10 @@ local autopassTable = {
 	["Two-Handed Maces"]		= {"ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK"},
 	["Two-Handed Swords"]		= {"DRUID", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
 	["Wands"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "ROGUE", "HUNTER", "SHAMAN"},
-	["Relic"]					= {"WARRIOR", "ROGUE", "PRIEST", "MAGE", "WARLOCK", "HUNTER"}
+	["Totems"]					= {"SHAMAN"}
+	["Sigils"]					= {"DEATHKNIGHT"}
+	["Idols"]					= {"DRUID"}
+	["Librams"]					= {"PALADIN"}
 }
 
 -- Used to find localized subType names
@@ -958,7 +961,10 @@ local subTypeLookup = {
 	["Two-Handed Maces"]		= 39758, -- The Jawbone
 	["Two-Handed Swords"]		= 40343, -- Armageddon
 	["Wands"]					= 40335, -- Touch of Horror
-	["Relic"]					= 51429, -- Wrathful Gladiator Idol of Resolve
+	["Totems"]					= 51507, -- Wrathful Gladiator Totem
+	["Sigils"]					= 51417, -- Wrathful Gladiator Sigil
+	["Idols"]					= 51429, -- Wrathful Gladiator Idol
+	["Librams"]					= 40707, -- Libram of Obstruction
 }
 
 -- Never autopass these armor types
@@ -984,6 +990,8 @@ function RCLootCouncil:LocalizeSubTypes()
 	if self.db.global.localizedSubTypes.created then return end -- We only need to create it once
 	-- Get the item info
 	for _, item in pairs(subTypeLookup) do
+		GameTooltip:Hide()
+		GameTooltip:SetHyperlink("item:"..item) -- force item update
 		GetItemInfo(item)
 	end
 	self.db.global.localizedSubTypes = {} -- reset
