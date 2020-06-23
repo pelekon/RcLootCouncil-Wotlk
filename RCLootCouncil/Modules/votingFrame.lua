@@ -94,6 +94,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		-- data is always a table to be unpacked
 		local decoded = Deflate:DecodeForPrint(serializedMsg)
+		if not decoded then 
+			return -- probably an old version or somehow a bad message idk just throw this away
+		end 
 		local decompressed = Deflate:DecompressDeflate(decoded)
 		local test, command, data = addon:Deserialize(decompressed)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end

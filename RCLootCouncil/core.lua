@@ -540,6 +540,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		-- data is always a table to be unpacked
 		local decoded = Deflate:DecodeForPrint(serializedMsg)
+		if not decoded then 
+			return -- probably an old version or somehow a bad message idk just throw this away
+		end 
 		local decompressed = Deflate:DecompressDeflate(decoded)
 		local test, command, data = self:Deserialize(decompressed)
 		-- NOTE: Since I can't find a better way to do this, all xrealms comms is routed through here
@@ -934,10 +937,10 @@ local autopassTable = {
 	["Two-Handed Maces"]		= {"ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK"},
 	["Two-Handed Swords"]		= {"DRUID", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
 	["Wands"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "ROGUE", "HUNTER", "SHAMAN"},
-	["Totems"]					= {"SHAMAN"}
-	["Sigils"]					= {"DEATHKNIGHT"}
-	["Idols"]					= {"DRUID"}
-	["Librams"]					= {"PALADIN"}
+	["Totems"]					= {"DEATHKNIGHT", "DRUID", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "PALADIN", "WARRIOR"},
+	["Sigils"]					= {"DRUID", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "PALADIN", "WARRIOR", "SHAMAN"},
+	["Idols"]					= {"DEATHKNIGHT", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "PALADIN", "WARRIOR", "SHAMAN"},
+	["Librams"]					= {"DEATHKNIGHT", "DRUID", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "WARRIOR", "SHAMAN"},
 }
 
 -- Used to find localized subType names
