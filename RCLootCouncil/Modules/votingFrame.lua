@@ -117,12 +117,12 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if addon.successful_history_requests[requested_name] and addon.successful_history_requests[requested_name].ts + 20 > time() then 
 					return
 				end
-				if addon.successful_history_requests[requested_name][sender] then 
+				if addon.successful_history_requests[requested_name] and addon.successful_history_requests[requested_name][sender] then 
 					return
 				end
 				addon.successful_history_requests[requested_name] = addon.successful_history_requests[requested_name] or {}
-				addon.successful_history_requests[request_name].ts = time()
-				addon.successful_history_requests[request_name][sender] = true 
+				addon.successful_history_requests[requested_name].ts = time()
+				addon.successful_history_requests[requested_name][sender] = true 
 
 				local playerDB = addon:GetHistoryDB()[requested_name] or {}
 				local response = {}
