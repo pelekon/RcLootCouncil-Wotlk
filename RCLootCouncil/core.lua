@@ -1305,7 +1305,7 @@ function RCLootCouncil:Getdb()
 end
 
 function RCLootCouncil:GetHistoryDB()
-	if self.isMasterLooter or not self:IsInGroup() then 
+	if self.isMasterLooter or (not self:IsInGroup() and not IsInRaid()) then 
 		return self.lootDB.factionrealm
 	else 
 		return self.mlhistory 
