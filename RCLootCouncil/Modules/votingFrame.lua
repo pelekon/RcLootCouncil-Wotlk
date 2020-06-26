@@ -414,8 +414,8 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 
 				if not addon.Slots_INVTYPE[item_slot] then -- when we are comparing a normal item with a token we won previously
 					local original = item_slot
-					item_slot = addon.INVTYPE_Slots[original][1] or addon.INVTYPE_Slots[original]
-					if historic_item_slot ~= item_slot and addon.INVTYPE_Slots[original]["or"] then
+					item_slot = addon.INVTYPE_Slots[original] and addon.INVTYPE_Slots[original][1] or addon.INVTYPE_Slots[original] or "INVTYPE_NONE"
+					if historic_item_slot ~= item_slot and addon.INVTYPE_Slots[original] and addon.INVTYPE_Slots[original]["or"] then
 						item_slot = addon.INVTYPE_Slots[original]["or"]
 					end 
 				end
