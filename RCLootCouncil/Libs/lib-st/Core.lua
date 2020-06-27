@@ -370,7 +370,7 @@ do
 		if a1 == b1 then 
 			if column.sortnext then
 				local nextcol = self.cols[column.sortnext];
-				if nextcol and not(nextcol.sort) then 
+				if not(nextcol.sort) then 
 					if nextcol.comparesort then 
 						return nextcol.comparesort(self, rowa, rowb, column.sortnext);
 					else

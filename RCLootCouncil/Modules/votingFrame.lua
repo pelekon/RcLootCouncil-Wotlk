@@ -30,17 +30,17 @@ local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 function RCVotingFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "",															sortnext = 2,		width = 20},	-- 1 Class
-		{ name = L["Name"],																			width = 80},	-- 2 Candidate Name
-		{ name = L["Rank"],		comparesort = GuildRankSort,					sortnext = 5,		width = 95},	-- 3 Guild rank
-		{ name = L["Response"],	comparesort = ResponseSort,						sortnext = 13,		width = 240},	-- 4 Response
-		{ name = L["ilvl"],														sortnext = 7,		width = 40},	-- 5 Total ilvl
-		{ name = L["Diff"],																			width = 40},	-- 6 ilvl difference
+		{ name = L["Name"],														sortnext = 4,		width = 80},	-- 2 Candidate Name
+		{ name = L["Rank"],		comparesort = GuildRankSort,					sortnext = 4,		width = 95},	-- 3 Guild rank
+		{ name = L["Response"],	comparesort = ResponseSort,						sortnext = 6,		width = 240},	-- 4 Response
+		{ name = L["ilvl"],														sortnext = 9,		width = 40},	-- 5 Total ilvl
+		{ name = L["Diff"],														sortnext = 5,		width = 40},	-- 6 ilvl difference
 		{ name = L["g1"],			align = "CENTER",							sortnext = 5,		width = ROW_HEIGHT},	-- 7 Current gear 1
 		{ name = L["g2"],			align = "CENTER",							sortnext = 5,		width = ROW_HEIGHT},	-- 8 Current gear 2
-		{ name = L["Votes"], 		align = "CENTER",							sortnext = 7,		width = 40},	-- 9 Number of votes
-		{ name = L["Vote"],			align = "CENTER",							sortnext = 10,		width = 60},	-- 10 Vote button
+		{ name = L["Votes"], 		align = "CENTER",												width = 40},	-- 9 Number of votes
+		{ name = L["Vote"],			align = "CENTER",							sortnext = 4,		width = 60},	-- 10 Vote button
 		{ name = L["Notes"],		align = "CENTER",												width = 40},	-- 11 Note icon
-		{ name = L["Roll"],			align = "CENTER", 							sortnext = 10,		width = 30},	-- 12 Roll
+		{ name = L["Roll"],			align = "CENTER", 							sortnext = 4,		width = 30},	-- 12 Roll
 	}
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -896,7 +896,7 @@ function ResponseSort(table, rowa, rowb, sortbycol)
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
-			if nextcol and not(nextcol.sort) then
+			if not(nextcol.sort) then
 				if nextcol.comparesort then
 					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
 				else
@@ -924,7 +924,7 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
-			if nextcol and not(nextcol.sort) then
+			if not(nextcol.sort) then
 				if nextcol.comparesort then
 					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
 				else
