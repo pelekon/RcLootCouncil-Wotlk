@@ -43,7 +43,7 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterComm("RCLootCouncil", "OnCommReceived")
 	self:RegisterEvent("LOOT_OPENED","OnEvent")
 	self:RegisterEvent("LOOT_CLOSED","OnEvent")
-	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 20, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
+	self:RegisterBucketEvent("RAID_ROSTER_UPDATE", 20, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterEvent("CHAT_MSG_WHISPER","OnEvent")
 	self:RegisterBucketMessage("RCConfigTableChanged", 2, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
@@ -110,6 +110,9 @@ function RCLootCouncilML:RemoveCandidate(name)
 end
 
 function RCLootCouncilML:UpdateGroup(ask)
+	if self == nil then 
+		return
+	end
 	addon:DebugLog("UpdateGroup", ask)
 	if type(ask) ~= "boolean" then ask = false end
 	local group_copy = {}
@@ -507,8 +510,8 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 				awarded = true
 
 			else
-				for i = 1, MAX_RAID_MEMBERS do
-					if addon:UnitIsUnit(GetMasterLootCandidate(self.lootTable[session].lootSlot, i), winner) then
+				for i = 1, addon:GetNumGroupMembers() do
+					if addon:UnitIsUnit(GetMasterLootCandidate(i), winner) then
 						addon:Debug("GiveMasterLoot", i)
 						GiveMasterLoot(self.lootTable[session].lootSlot, i)
 						awarded = true
@@ -535,8 +538,8 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 		if self.lootTable[session].quality < GetLootThreshold() then
 			LootSlot(self.lootTable[session].lootSlot)
 		else
-			for i = 1, MAX_RAID_MEMBERS do
-				if addon:UnitIsUnit(GetMasterLootCandidate(self.lootTable[session].lootSlot, i), "player") then
+			for i = 1, addon:GetNumGroupMembers() do
+				if addon:UnitIsUnit(GetMasterLootCandidate(i), "player") then
 					GiveMasterLoot(self.lootTable[session].lootSlot, i)
 				end
 			end
@@ -599,7 +602,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 		end
 	else
 		for i = 1, addon:GetNumGroupMembers() do
-			if addon:UnitIsUnit(GetMasterLootCandidate(lootIndex, i), name) then
+			if addon:UnitIsUnit(GetMasterLootCandidate(i), name) then
 				GiveMasterLoot(lootIndex,i)
 				awarded = true
 			end

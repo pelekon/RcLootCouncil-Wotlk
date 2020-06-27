@@ -262,7 +262,11 @@ end
 
 function RCVotingFrame:HandleVote(session, name, vote, voter)
 	-- Do the vote
-	lootTable[session].candidates[name].votes = lootTable[session].candidates[name].votes + vote
+	if not lootTable or not lootTable[session] or not lootTable[session].candidates or not lootTable[session].candidates[name] then 
+		return 
+	end
+	
+	lootTable[session].candidates[name].votes = (lootTable[session].candidates[name].votes or 0) + vote
 	-- And update voters names
 	if vote == 1 then
 		tinsert(lootTable[session].candidates[name].voters, voter)
@@ -435,7 +439,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 
 			-- count overall responses
 			count[entry.response] = count[entry.response] and count[entry.response] + 1 or 1
-			if not color[entry.response] or unpack(color[entry.response],1,3) == unpack({1,1,1}) and entry.color and #entry.color ~= 0  then -- If it's not already added
+			if not color[entry.response] or (color[entry.response] and unpack(color[entry.response],1,3) == unpack({1,1,1})) and entry.color and #entry.color ~= 0  then -- If it's not already added
 				color[entry.response] = entry.color and #entry.color ~= 0 and #entry.color == 4 or {1,1,1}
 			end
 
@@ -892,7 +896,7 @@ function ResponseSort(table, rowa, rowb, sortbycol)
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
-			if not(nextcol.sort) then
+			if nextcol and not(nextcol.sort) then
 				if nextcol.comparesort then
 					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
 				else
@@ -920,7 +924,7 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
-			if not(nextcol.sort) then
+			if nextcol and not(nextcol.sort) then
 				if nextcol.comparesort then
 					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
 				else

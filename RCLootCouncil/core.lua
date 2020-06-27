@@ -1057,7 +1057,7 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 		diff = (ilvl - select(4, GetItemInfo(g2)))
 	end
 
-	local ilvl = GearScore_GetScore and GearScore_GetScore("player", UnitName("player")) or 0
+	local ilvl = GearScore_GetScore and GearScore_GetScore(UnitName("player"), "player") or 0
 	return
 		session,
 		self.playerName,
