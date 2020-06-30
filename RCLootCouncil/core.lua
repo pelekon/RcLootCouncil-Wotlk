@@ -20,6 +20,9 @@ local lwin = LibStub("LibWindow-1.1")
 local Deflate = LibStub("LibDeflate")
 local LibGroupTalents = LibStub("LibGroupTalents-1.0")
 
+local GUILD_DEMOTE_PATTERN = "^".._G.ERR_GUILD_DEMOTE_SSS:gsub('%%s', '(.+)').."$"
+local GUILD_PROMOTE_PATTERN = "^".._G.ERR_GUILD_PROMOTE_SSS:gsub('%%s', '(.+)').."$"
+
 RCLootCouncil:SetDefaultModuleState(false)
 
 -- Init shorthands
@@ -255,6 +258,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "EnterCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
+	self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckGuildUpdate")
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
 	if IsInGuild() then
@@ -360,8 +364,60 @@ function RCLootCouncil:ConfigTableChanged(val)
 	self:SendMessage("RCConfigTableChanged", val)
 end
 
+function RCLootCouncil:CheckGuildUpdate(_, msg)
+	local _, _, _, rank_name = strfind(msg, GUILD_PROMOTE_PATTERN) -- update on promotion
+	if rank_name == nil then 
+		rank_name = select(4, strfind(msg, GUILD_DEMOTE_PATTERN))
+	end
+	if rank_name then
+		if not self.checkUpdateTimer then
+			self.checkUpdateTimer = self:ScheduleTimer("AddGuildRanksToCouncil", 2)
+		end
+	end
+end
+
+function RCLootCouncil:AddGuildRanksToCouncil(rank)
+	self.checkUpdateTimer = nil
+	rank = rank or self.db.profile.minRank
+	self.db.profile.council = {}
+	for i = 1, GetNumGuildMembers() do
+		local name, _, rankIndex = GetGuildRosterInfo(i) -- get info from all guild members
+		if rankIndex + 1 <= rank then -- if the member is the required rank, or above
+			tinsert(self.db.profile.council, name) -- then insert them to the council
+		end
+	end
+	self:CouncilChanged()
+end
+
 function RCLootCouncil:CouncilChanged()
-	self:SendMessage("RCCouncilChanged")
+	if self.isMasterLooter then 
+		self:GetActiveModule("masterlooter"):CouncilChanged()
+	end
+end
+
+--- Returns a table containing the the council members in the group
+function RCLootCouncil:GetCouncilInGroup()
+	local council = {}
+	if self:IsInRaid() then
+		for k,v in ipairs(db.council) do
+			if UnitInRaid(v) then
+				tinsert(council, v)
+			end
+		end
+	elseif self:IsInGroup() then -- Party
+		for k,v in ipairs(db.council) do
+			if UnitInParty(v) then
+				tinsert(council, v)
+			end
+		end
+	elseif self.isCouncil then -- When we're alone
+		tinsert(council, self.playerName)
+	end
+	if #council == 0 and self.masterLooter then -- We can't have empty council
+		tinsert(council, self.masterLooter)
+	end
+	self:DebugLog("GetCouncilInGroup", unpack(council))
+	return council
 end
 
 function RCLootCouncil:ChatCommand(msg)
@@ -571,7 +627,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					self:SendCommand("group", "lootAck", self.playerName) -- send ack
 
-					if db.autoPass then -- Do autopassing
+					-- disable auto pass until i know what the fuck is going on with it
+					if false then--db.autoPass then -- Do autopassing
 						for ses, v in ipairs(lootTable) do
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType, v.equipLoc, v.link) then
@@ -1270,30 +1327,6 @@ function RCLootCouncil:IsCouncil(name)
 	return ret
 end
 
---- Returns a table containing the the council members in the group
-function RCLootCouncil:GetCouncilInGroup()
-	local council = {}
-	if self:IsInRaid() then
-		for k,v in ipairs(self.council) do
-			if UnitInRaid(v) then
-				tinsert(council, v)
-			end
-		end
-	elseif self:IsInGroup() then -- Party
-		for k,v in ipairs(self.council) do
-			if UnitInParty(v) then
-				tinsert(council, v)
-			end
-		end
-	elseif self.isCouncil then -- When we're alone
-		tinsert(council, self.playerName)
-	end
-	if #council == 0 and self.masterLooter then -- We can't have empty council
-		tinsert(council, self.masterLooter)
-	end
-	self:DebugLog("GetCouncilInGroup", unpack(council))
-	return council
-end
 
 function RCLootCouncil:SessionError(...)
 	self:Print(L["session_error"])

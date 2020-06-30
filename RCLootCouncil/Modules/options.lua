@@ -741,13 +741,7 @@ function addon:OptionsTable()
 												end,
 												set = function(_, val)
 													self.db.profile.minRank = val
-													for i = 1, GetNumGuildMembers() do
-														local name, _, rankIndex = GetGuildRosterInfo(i) -- get info from all guild members
-														if rankIndex + 1 <= val then -- if the member is the required rank, or above
-															tinsert(self.db.profile.council, name) -- then insert them to the council
-														end
-													end
-													addon:CouncilChanged()
+													self:AddGuildRanksToCouncil(val)
 												end,
 												get = function() return self.db.profile.minRank; end,
 											},
@@ -989,6 +983,8 @@ function addon:GetGuildOptions()
 					width = "full",
 					values = function()
 						wipe(names)
+						local was_showing_offline = GetGuildRosterShowOffline()
+						SetGuildRosterShowOffline(true)
 						for ci = 1, GetNumGuildMembers() do
 							local name, rank1, rankIndex = GetGuildRosterInfo(ci); -- NOTE I assume the realm part of name is without spaces.
 							if (rankIndex + 1) == i then names[name] = name end
@@ -996,6 +992,7 @@ function addon:GetGuildOptions()
 						table.sort(names, function(v1, v2)
 							return v1 and v1 < v2
 						end)
+						SetGuildRosterShowOffline(was_showing_offline)
 						return names
 					end,
 					get = function(info, key)
