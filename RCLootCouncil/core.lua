@@ -287,7 +287,11 @@ function RCLootCouncil:OnEnable()
 		self:Print("Your settings have been reset due to upgrading to v2.0.0")
 	end
 
-	self.db.global.version = self.version;
+	if self.db.global.version and self.db.global.version ~= self.version then 
+		self.db.global.localizedSubTypes.created = false -- re-cache incase we updated subtypes
+		self.db.global.version = self.version
+	end
+
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
 
 	if self.tVersion then
@@ -627,8 +631,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					self:SendCommand("group", "lootAck", self.playerName) -- send ack
 
-					-- disable auto pass until i know what the fuck is going on with it
-					if false then--db.autoPass then -- Do autopassing
+					
+					if db.autoPass then -- Do autopassing
 						for ses, v in ipairs(lootTable) do
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType, v.equipLoc, v.link) then
