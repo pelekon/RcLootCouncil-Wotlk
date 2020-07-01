@@ -189,6 +189,11 @@ function RCLootCouncil:OnInitialize()
 			ignore = {
 				43345, -- Dragon Hide Backpack
 				43347, -- Satchel of Spoils 
+				43346, -- Large Satchel of Spoils
+				43986, -- Black Drake
+				43954, -- Twilight Drake
+				45038, -- Val'anyr fragment
+				45087, -- Runed Orb
 			},
 		},
 	} -- defaults end
