@@ -1,6 +1,6 @@
-# RCLootCouncil 2.0.1 for 3.3.5 
+# RCLootCouncil 2.0.3 for 3.3.5 
 
-This is RCLootCouncil 2.0.1 (legion version) backported to work with 3.3.5a. 
+This is RCLootCouncil 2.0.3 (legion version) backported to work with 3.3.5a. 
 Supports t7 / 8 / 9 / 10 tier tokens as well.
 
 
