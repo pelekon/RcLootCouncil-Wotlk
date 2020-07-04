@@ -339,6 +339,10 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end
 		addon:DebugLog("MLComm received:", command, "from:", sender, "distri:", distri)
 
+		if not addon.isMasterLooter then 
+			addon.isMasterLooter, addon.masterLooter = addon:GetML()
+		end
+
 		if test and addon.isMasterLooter then -- only ML receives these commands
 			if command == "playerInfo" then
 				self:AddCandidate(unpack(data))
@@ -596,11 +600,9 @@ function RCLootCouncilML:AnnounceAward(name, link, text)
 	if db.announceAward then
 		for k,v in pairs(db.awardText) do
 			if v.channel ~= "NONE" then
-				local votes = self.lootTable[session].candidates[name] and self.lootTable[session].candidates[name].votes or ""
 				local message = gsub(v.text, "&p", name)
 				message = gsub(message, "&i", link)
 				message = gsub(message, "&r", text)
-				message = gsub(message, "%n", votes)
 				SendChatMessage(message, addon:GetAnnounceChannel(v.channel))
 			end
 		end

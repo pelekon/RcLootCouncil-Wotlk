@@ -439,8 +439,8 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 
 			-- count overall responses
 			count[entry.response] = count[entry.response] and count[entry.response] + 1 or 1
-			if not color[entry.response] or (color[entry.response] and unpack(color[entry.response],1,3) == unpack({1,1,1})) and entry.color and #entry.color ~= 0  then -- If it's not already added
-				color[entry.response] = entry.color and #entry.color ~= 0 and #entry.color == 4 or {1,1,1}
+			if not color[entry.response] then -- If it's not already added
+				color[entry.response] = #entry.color == 4 and entry.color or addon:GetResponseColor(entry.responseID) or {1, 1, 1, 1}
 			end
 
 		end -- end counting
