@@ -440,7 +440,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			-- count overall responses
 			count[entry.response] = count[entry.response] and count[entry.response] + 1 or 1
 			if not color[entry.response] then -- If it's not already added
-				color[entry.response] = #entry.color == 4 and entry.color or addon:GetResponseColor(entry.responseID) or {1, 1, 1, 1}
+				color[entry.response] = entry.color and #entry.color == 4 and entry.color or addon:GetResponseColorTable(entry.responseID) or {1, 1, 1, 1}
 			end
 
 		end -- end counting
@@ -449,7 +449,8 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			tip:AddLine(" ")
 			tip:AddLine("Last 5 items won:")
 			for _, entry in ipairs(nonMainspecEntries) do 
-				tip:AddDoubleLine(format(L["Won 'item'"], entry.lootWon), addon:GetResponseText(entry.responseID), 1,1,1, 1,1,1)
+				local r, g, b = unpack(addon:GetResponseColorTable(entry.responseID))
+				tip:AddDoubleLine(format(L["Won 'item'"], entry.lootWon), addon:GetResponseText(entry.responseID), 1,1,1, r, g, b)
 				tip:AddDoubleLine(entry.time .. " " ..entry.date, format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), 1,1,1, 1,1,1)
 			end
 			tip:AddLine(" ")
@@ -457,7 +458,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 
 		local totalNum = 0
 		for response, num in pairs(count) do
-			local r,g,b = unpack(color[response],1,3)
+			local r,g,b = unpack(color[response])
 			tip:AddDoubleLine(response, num, r,g,b, r,g,b) -- Make sure we don't add the alpha value
 			totalNum = totalNum + num
 		end
