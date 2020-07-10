@@ -51,7 +51,7 @@ local player_relogged = true -- Determines if we potentially need data from the 
 
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
-  	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
+  	self.version = "2.0.4" -- hard code the version so reload ui updates will report correct version
 	self.nnp = false
 	self.debug = false
 	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"

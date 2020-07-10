@@ -2,7 +2,7 @@
 ## Interface: 30300
 ## Notes: Interface for running a Loot Council backported to 3.3.5a
 ## Title: RCLootCouncil
-## Version: 2.0.3
+## Version: 2.0.4
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
 
