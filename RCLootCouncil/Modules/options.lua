@@ -201,6 +201,15 @@ function addon:OptionsTable()
 										func = function() self.lootDB:ResetDB("") end,
 										confirm = true,
 									},
+									showForHistoryID = {
+										order = 6, 
+										name = "Response ID to check",
+										desc = "Checks for this response ID when looting and warns the council if the person has previously won this slot with this id",
+										type = "input",
+										pattern = "%d",
+										get = function() return self.db.profile.checkID end,
+										set = function(info, value) self.db.profile.checkID = value end,
+									}
 								},
 							},
 						},

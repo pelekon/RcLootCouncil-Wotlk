@@ -111,6 +111,7 @@ function RCLootCouncil:OnInitialize()
 				never = false,			-- Never enable
 				state = "ask_ml", 	-- Current state
 			},
+			checkID = 1,
 			autoStart = false, -- start a session with all eligible items
 			autoLoot = true, -- Auto loot equippable items
 			autolootEverything = true,
@@ -1124,6 +1125,11 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 	end
 
 	local ilvl = GearScore_GetScore and GearScore_GetScore(UnitName("player"), "player") or 0
+	if ilvl == 0 then 
+		if GS_Data then 
+			ilvl = GS_Data[GetRealmName()].Players[UnitName("player")].GearScore or 0
+		end
+	end
 	return
 		session,
 		self.playerName,
