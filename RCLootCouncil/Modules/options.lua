@@ -455,9 +455,22 @@ function addon:OptionsTable()
 										style = "dropdown",
 										values = function()
 											local t = {}
-											for i = 1, addon:GetNumGroupMembers() do
-												local name = GetRaidRosterInfo(i)
-												t[name] = name
+											if addon:IsInRaid() then
+												for i = 1, addon:GetNumGroupMembers() do
+													local name = GetRaidRosterInfo(i)
+													if name then
+														t[name] = name
+													end
+												end
+											elseif addon:IsInGroup() then
+												for i = 1, MAX_PARTY_MEMBERS do
+													if GetPartyMember(i) then
+														local name = UnitName("party"..i)
+														if name then
+															t[name] = name
+														end
+													end
+												end
 											end
 											return t;
 										end,
@@ -793,9 +806,22 @@ function addon:OptionsTable()
 										width = "full",
 										values = function()
 											local t = {}
-											for i = 1, addon:GetNumGroupMembers() do
-												local name = select(1,GetRaidRosterInfo(i))
-												t[name] = name
+											if addon:IsInRaid() then
+												for i = 1, addon:GetNumGroupMembers() do
+													local name = GetRaidRosterInfo(i)
+													if name then
+														t[name] = name
+													end
+												end
+											elseif addon:IsInGroup() then
+												for i = 1, MAX_PARTY_MEMBERS do
+													if GetPartyMember(i) then
+														local name = UnitName("party"..i)
+														if name then
+															t[name] = name
+														end
+													end
+												end
 											end
 											if #t == 0 then t[self.playerName] = self.playerName end -- Insert ourself
 											table.sort(t, function(v1, v2)
