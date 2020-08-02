@@ -1353,7 +1353,7 @@ function RCLootCouncil:Getdb()
 end
 
 function RCLootCouncil:GetHistoryDB()
-	if self.isMasterLooter or (not self:IsInGroup() and not IsInRaid()) then 
+	if self.isMasterLooter or (not self:IsInGroup() and not self:IsInRaid()) then 
 		return self.lootDB.factionrealm
 	else 
 		return self.mlhistory 
@@ -1361,7 +1361,7 @@ function RCLootCouncil:GetHistoryDB()
 end
 
 function RCLootCouncil:GetAnnounceChannel(channel)
-	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
+	return channel == "group" and (self:IsInRaid() and "RAID" or "PARTY") or channel
 end
 
 function RCLootCouncil:GetItemIDFromLink(link)
