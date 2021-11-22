@@ -3,6 +3,9 @@
 This is RCLootCouncil 2.0.3 (legion version) backported to work with 3.3.5a. 
 Supports t7 / 8 / 9 / 10 tier tokens as well.
 
+Supports most if not all 3.3.5 WoTLK servers.
+
+**Supports [Ascension](https://ascension.gg)**
 
 
 # Additional Features
@@ -25,4 +28,3 @@ Displays if the user has previously won a max roll for the slot.
 Shows their last 5 items won if they have not won a max roll for that slot yet.
 
 ![](https://i.imgur.com/ot1sUVx.png)
-
