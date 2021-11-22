@@ -984,31 +984,34 @@ function RCLootCouncil:Timer(type, ...)
 end
 
 -- Classes that should auto pass a subtype
-local autopassTable = {
-	["Cloth"]					= {"WARRIOR", "DEATHKNIGHT", "ROGUE", "HUNTER"},
-	["Leather"] 				= {"PRIEST", "MAGE", "WARLOCK"},
-	["Mail"] 					= {"DRUID", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
-	["Plate"]					= {"DRUID", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Shields"] 				= {"DEATHKNIGHT", "DRUID", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK"},
-	["Bows"] 					= {"DEATHKNIGHT", "PALADIN", "DRUID", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Crossbows"] 				= {"DEATHKNIGHT", "PALADIN", "DRUID", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Daggers"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "HUNTER"},
-	["Guns"]					= {"DEATHKNIGHT", "PALADIN", "DRUID","SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Fist Weapons"] 			= {"DEATHKNIGHT", "PALADIN", "PRIEST", "MAGE", "WARLOCK"},
-	["One-Handed Axes"]			= {"DRUID", "PRIEST", "MAGE", "WARLOCK"},
-	["One-Handed Maces"]		= {"HUNTER", "MAGE", "WARLOCK"},
-	["One-Handed Swords"] 		= {"DRUID", "SHAMAN", "PRIEST"},
-	["Polearms"] 				= {"ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Staves"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN",  "ROGUE"},
-	["Two-Handed Axes"]			= {"DRUID", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
-	["Two-Handed Maces"]		= {"ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK"},
-	["Two-Handed Swords"]		= {"DRUID", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Wands"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "ROGUE", "HUNTER", "SHAMAN"},
-	["Totems"]					= {"DEATHKNIGHT", "DRUID", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "PALADIN", "WARRIOR"},
-	["Sigils"]					= {"DRUID", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "PALADIN", "WARRIOR", "SHAMAN"},
-	["Idols"]					= {"DEATHKNIGHT", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "PALADIN", "WARRIOR", "SHAMAN"},
-	["Librams"]					= {"DEATHKNIGHT", "DRUID", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "WARRIOR", "SHAMAN"},
-}
+local autopassTable = {}
+if not AscensionUI then -- Ascension don't auto pass anything
+	autopassTable = {
+		["Cloth"]					= {"WARRIOR", "DEATHKNIGHT", "ROGUE", "HUNTER"},
+		["Leather"] 				= {"PRIEST", "MAGE", "WARLOCK"},
+		["Mail"] 					= {"DRUID", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
+		["Plate"]					= {"DRUID", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+		["Shields"] 				= {"DEATHKNIGHT", "DRUID", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK"},
+		["Bows"] 					= {"DEATHKNIGHT", "PALADIN", "DRUID", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+		["Crossbows"] 				= {"DEATHKNIGHT", "PALADIN", "DRUID", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+		["Daggers"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "HUNTER"},
+		["Guns"]					= {"DEATHKNIGHT", "PALADIN", "DRUID","SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+		["Fist Weapons"] 			= {"DEATHKNIGHT", "PALADIN", "PRIEST", "MAGE", "WARLOCK"},
+		["One-Handed Axes"]			= {"DRUID", "PRIEST", "MAGE", "WARLOCK"},
+		["One-Handed Maces"]		= {"HUNTER", "MAGE", "WARLOCK"},
+		["One-Handed Swords"] 		= {"DRUID", "SHAMAN", "PRIEST"},
+		["Polearms"] 				= {"ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+		["Staves"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN",  "ROGUE"},
+		["Two-Handed Axes"]			= {"DRUID", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
+		["Two-Handed Maces"]		= {"ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK"},
+		["Two-Handed Swords"]		= {"DRUID", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+		["Wands"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "ROGUE", "HUNTER", "SHAMAN"},
+		["Totems"]					= {"DEATHKNIGHT", "DRUID", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "PALADIN", "WARRIOR"},
+		["Sigils"]					= {"DRUID", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "PALADIN", "WARRIOR", "SHAMAN"},
+		["Idols"]					= {"DEATHKNIGHT", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "PALADIN", "WARRIOR", "SHAMAN"},
+		["Librams"]					= {"DEATHKNIGHT", "DRUID", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "WARRIOR", "SHAMAN"},
+	}
+end
 
 -- Used to find localized subType names
 local subTypeLookup = {
@@ -1353,7 +1356,7 @@ function RCLootCouncil:Getdb()
 end
 
 function RCLootCouncil:GetHistoryDB()
-	if self.isMasterLooter or (not self:IsInGroup() and not IsInRaid()) then 
+	if self.isMasterLooter or (not self:IsInGroup() and not self:IsInRaid()) then 
 		return self.lootDB.factionrealm
 	else 
 		return self.mlhistory 
@@ -1361,7 +1364,7 @@ function RCLootCouncil:GetHistoryDB()
 end
 
 function RCLootCouncil:GetAnnounceChannel(channel)
-	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
+	return channel == "group" and (self:IsInRaid() and "RAID" or "PARTY") or channel
 end
 
 function RCLootCouncil:GetItemIDFromLink(link)

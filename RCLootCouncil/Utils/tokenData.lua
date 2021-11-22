@@ -194,6 +194,12 @@ RCTokenLevel = {
 local VANQUISHER = {"DEATHKNIGHT", "DRUID", "MAGE", "ROGUE"}
 local CONQUEROR = {"PALADIN", "PRIEST", "WARLOCK"}
 local PROTECTOR = {"HUNTER", "SHAMAN", "WARRIOR"}
+
+if AscensionUI then -- Ascension all tokens are used by everyone
+	tinsert(CONQUEROR, "DRUID")
+	tinsert(PROTECTOR, "DRUID")
+end
+
 -- Classes that can use the token
 RCTokenClasses = {
 	-- TIER 7
